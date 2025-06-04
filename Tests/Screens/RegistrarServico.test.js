@@ -3,5 +3,5 @@ import RegistrarServico from '../../src/screens/RegistrarServico';
 
 it('Renderiza corretamente', () => {
     const tree = renderer.create(<RegistrarServico />).toJSON();
-    expect(tree).toBeTruthy();
+    expect(tree).toMatchSnapshot();
 });

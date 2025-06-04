@@ -10,6 +10,7 @@
     "test": "jest"
   },
   "dependencies": {
+    "@react-native-picker/picker": "^2.11.0",
     "expo": "~53.0.9",
     "expo-sqlite": "~15.2.10",
     "expo-status-bar": "~2.2.3",

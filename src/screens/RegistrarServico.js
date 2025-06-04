@@ -43,7 +43,7 @@ export default function RegistrarServico() {
           selectedValue={tipoServico}
           onValueChange={(itemValue) => setTipoServico(itemValue)}
         >
-          <Picker.Item label="Selecione um serviço" value="" />
+          <Picker.Item label='Selecione um serviço' value="" />
           {servicos.map(s => (
             <Picker.Item key={s.id} label={s.nome} value={s.nome} />
           ))}
@@ -53,7 +53,7 @@ export default function RegistrarServico() {
       <Text style={styles.label}>Nome do cliente</Text>
       <TextInput
         style={styles.input}
-        placeholder="Ex: João da Silva"
+        placeholder='Ex: João da Silva'
         value={nomeCliente}
         onChangeText={setNomeCliente}
       />
@@ -61,16 +61,16 @@ export default function RegistrarServico() {
       <Text style={styles.label}>Valor do serviço</Text>
       <TextInput
         style={styles.input}
-        placeholder="Ex: 120"
+        placeholder='Ex: 120'
         value={valor}
         onChangeText={setValor}
-        keyboardType="numeric"
+        keyboardType='numeric'
       />
 
       <Text style={styles.label}>Descrição</Text>
       <TextInput
         style={[styles.input, styles.textarea]}
-        placeholder="Ex: Troca de tela com peça original"
+        placeholder='Ex: Troca de tela com peça original'
         value={descricao}
         onChangeText={setDescricao}
         multiline
@@ -80,12 +80,12 @@ export default function RegistrarServico() {
       <Text style={styles.label}>Data do serviço</Text>
       <TextInput
         style={styles.input}
-        placeholder="Ex: 05/06/2025"
+        placeholder='Ex: 05/06/2025'
         value={data}
         onChangeText={setData}
       />
 
-      <Button title="Salvar serviço" onPress={salvarServico} />
+      <Button title='Salvar serviço' onPress={salvarServico} />
     </View>
   );
 }
@@ -94,32 +94,32 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 24,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
   },
   label: {
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 8,
     marginTop: 16,
     fontSize: 16,
   },
   pickerContainer: {
-    borderColor: '#bbb',
+    borderColor: "#bbb",
     borderWidth: 1,
     borderRadius: 6,
     marginBottom: 8,
-    backgroundColor: '#f9f9f9',
+    backgroundColor: "#f9f9f9",
   },
   input: {
-    borderColor: '#bbb',
+    borderColor: "#bbb",
     borderWidth: 1,
     borderRadius: 6,
     padding: 12,
     fontSize: 16,
-    backgroundColor: '#f9f9f9',
+    backgroundColor: "#f9f9f9",
     marginBottom: 8,
   },
   textarea: {
     minHeight: 60,
-    textAlignVertical: 'top',
+    textAlignVertical: "top",
   },
 });
