@@ -6,7 +6,7 @@ import { createTable } from './src/services/ServicoBD';
 
 export default function App() {
   useEffect(() => {
-    createTable();
+    createTable().catch(console.error);
   }, []);
 
   return (

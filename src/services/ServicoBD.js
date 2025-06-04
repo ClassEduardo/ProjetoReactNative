@@ -1,22 +1,27 @@
-import * as SQLite from 'expo-sqlite';
+import { openDatabaseSync } from 'expo-sqlite';
 
-const db = SQLite.openDatabase('assistencia.db');
+const db = openDatabaseSync('assistencia.db');
 
-export function createTable() {
-  db.transaction(tx => {
-    tx.executeSql(
+export async function createTable() {
+  try {
+    await db.execAsync(
       "CREATE TABLE IF NOT EXISTS servicos (id INTEGER PRIMARY KEY AUTOINCREMENT, nome TEXT, descricao TEXT);"
     );
-  });
+  } catch (error) {
+    console.log(error);
+  }
 }
 
-export function inserirServico(nome, descricao, callback) {
-  db.transaction(tx => {
-    tx.executeSql(
+export async function inserirServico(nome, descricao, callback) {
+  try {
+    await db.runAsync(
       "INSERT INTO servicos (nome, descricao) VALUES (?, ?);",
-      [nome, descricao],
-      (_, result) => callback(true),
-      (_, error) => { console.log(error); callback(false); }
+      nome,
+      descricao
     );
-  });
+    callback(true);
+  } catch (error) {
+    console.log(error);
+    callback(false);
+  }
 }

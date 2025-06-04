@@ -1,6 +1,7 @@
 
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
+import { inserirServico } from '../services/ServicoBD';
 
 export default function CriarServico (){
   const [nome, setNome] = useState('');
