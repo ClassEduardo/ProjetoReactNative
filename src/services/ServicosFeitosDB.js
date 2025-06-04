@@ -1,10 +1,10 @@
-import * as SQLite from 'expo-sqlite';
+import { openDatabaseSync } from 'expo-sqlite';
 
-const db = SQLite.openDatabase('assistencia.db');
+const db = openDatabaseSync('assistencia.db');
 
-export function criarTabelaServicosFeitos() {
-  db.transaction(tx => {
-    tx.executeSql(
+export async function createTableServicosFeitos() {
+  try {
+    await db.execAsync(
       `CREATE TABLE IF NOT EXISTS servicos_feitos (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         tipo_servico TEXT,
@@ -14,18 +14,26 @@ export function criarTabelaServicosFeitos() {
         data_servico TEXT
       );`
     );
-  });
+  } catch (error) {
+    console.log('Erro ao criar tabela servicos_feitos:', error);
+  }
 }
 
-export function inserirServicoFeito(tipoServico, nomeCliente, valor, descricao, data, callback) {
-  db.transaction(tx => {
-    tx.executeSql(
+export async function inserirServicoFeito(tipoServico, nomeCliente, valor, descricao, data, callback) {
+  try {
+    await db.runAsync(
       `INSERT INTO servicos_feitos 
-        (tipo_servico, nome_cliente, valor, descricao, data_servico) 
+        (tipo_servico, nome_cliente, valor, descricao, data_servico)
         VALUES (?, ?, ?, ?, ?);`,
-      [tipoServico, nomeCliente, valor, descricao, data],
-      (_, result) => callback(true),
-      (_, error) => { console.log(error); callback(false); }
+      tipoServico,
+      nomeCliente,
+      valor,
+      descricao,
+      data
     );
-  });
+    callback(true);
+  } catch (error) {
+    console.log('Erro ao inserir serviço feito:', error);
+    callback(false);
+  }
 }
