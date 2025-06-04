@@ -17,7 +17,6 @@ export function criarTabelaServicosFeitos() {
   });
 }
 
-// Insere um novo serviço feito
 export function inserirServicoFeito(tipoServico, nomeCliente, valor, descricao, data, callback) {
   db.transaction(tx => {
     tx.executeSql(
