@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet, Alert, ToastAndroid } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { listarServicos } from '../services/ServicoBD';
 import { inserirServicoFeito } from '../services/ServicosFeitosDB';
@@ -16,14 +16,29 @@ export default function RegistrarServico() {
     listarServicos((lista) => setServicos(lista));
   }, []);
 
+  const formatarData = (texto) => {
+    const somenteNumeros = texto.replace(/[^0-9]/g, '').slice(0, 8);
+    if (somenteNumeros.length >= 5) {
+      return somenteNumeros.replace(
+        /(\d{2})(\d{2})(\d{0,4}).*/,
+        '$1/$2/$3'
+      );
+    }
+    if (somenteNumeros.length >= 3) {
+      return somenteNumeros.replace(/(\d{2})(\d{0,2})/, '$1/$2');
+    }
+    return somenteNumeros;
+  };
+  
   const salvarServico = () => {
-    if (!tipoServico || !nomeCliente.trim() || !valor.trim() || !data.trim()) {
-      Alert.alert('Atenção', 'Preencha todos os campos obrigatórios!');
+    if (!tipoServico || !valor.trim() || !data.trim()) {
+      Alert.alert('Atenção', 'Preencha todos os campos obrigatórios!\nTipo de serviço, Valor do serviço e Data do serviço');
       return;
     }
+
     inserirServicoFeito(tipoServico, nomeCliente, valor, descricao, data, (ok) => {
       if (ok) {
-        Alert.alert('Serviço registrado com sucesso!');
+        ToastAndroid.show('Serviço registrado com sucesso!', ToastAndroid.SHORT);
         setTipoServico('');
         setNomeCliente('');
         setValor('');
@@ -43,7 +58,6 @@ export default function RegistrarServico() {
           selectedValue={tipoServico}
           onValueChange={(itemValue) => setTipoServico(itemValue)}
         >
-          <Picker.Item label='Selecione um serviço' value="" />
           {servicos.map(s => (
             <Picker.Item key={s.id} label={s.nome} value={s.nome} />
           ))}
@@ -82,7 +96,9 @@ export default function RegistrarServico() {
         style={styles.input}
         placeholder='Ex: 05/06/2025'
         value={data}
-        onChangeText={setData}
+        onChangeText={(t) => setData(formatarData(t))}
+        keyboardType='numbers-and-punctuation'
+        maxLength={10}
       />
 
       <Button title='Salvar serviço' onPress={salvarServico} />
@@ -95,6 +111,7 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 24,
     backgroundColor: "#fff",
+    width: '90%',
   },
   label: {
     fontWeight: "bold",
@@ -119,7 +136,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   textarea: {
-    minHeight: 60,
+    minWidth: '100%',
     textAlignVertical: "top",
   },
 });

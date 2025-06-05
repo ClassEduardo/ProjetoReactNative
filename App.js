@@ -2,17 +2,20 @@ import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
 import { useEffect } from 'react';
 import CriarServico from './src/screens/CriarServico';
-import { createTable } from './src/services/ServicoBD';
+import RegistrarServico from './src/screens/RegistrarServico';
+import { createTableServicos } from './src/services/ServicoBD';
+import { createTableServicosFeitos } from './src/services/ServicosFeitosDB';
 
 export default function App() {
   useEffect(() => {
-    createTable().catch(console.error);
+    createTableServicos().catch(console.error);
+    createTableServicosFeitos().catch(console.error);
   }, []);
 
   return (
     <View style={styles.container}>
       <Text>Open up App.js to start working on your app!</Text>
-      <CriarServico />
+      <RegistrarServico />
       <StatusBar style="auto" />
     </View>
   );
