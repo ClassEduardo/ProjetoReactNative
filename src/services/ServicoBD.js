@@ -8,7 +8,7 @@ export async function createTableServicos() {
       "CREATE TABLE IF NOT EXISTS servicos (id INTEGER PRIMARY KEY AUTOINCREMENT, nome TEXT, descricao TEXT);"
     );
   } catch (error) {
-    console.log(error);
+    console.log('Erro ao criar a tabela.',error);
   }
 }
 
@@ -21,7 +21,7 @@ export async function inserirServico(nome, descricao, callback) {
     );
     callback(true);
   } catch (error) {
-    console.log(error);
+    console.log('Erro ao obter serviços.',error);
     callback(false);
   }
 }
@@ -33,7 +33,22 @@ export async function listarServicos(callback) {
     );
     callback(resultados);
   } catch (error) {
-    console.log(error);
+    console.log('Erro ao obter serviços.',error);
     callback([]);
+  }
+}
+
+export async function atualizarServico(id, nome, descricao, callback) {
+  try {
+    await db.runAsync(
+      "UPDATE servicos SET nome = ?, descricao = ? WHERE id = ?;",
+      nome,
+      descricao,
+      id
+    );
+    callback(true);
+  } catch (error) {
+    console.log('Erro ao atualizar serviço:', error);
+    callback(false);
   }
 }
