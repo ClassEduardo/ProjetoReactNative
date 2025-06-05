@@ -61,7 +61,7 @@ export async function atualizarServicoFeito(id, tipoServico, nomeCliente, valor,
 export async function listarServicosFeitos(callback) {
   try {
     const resultados = await db.getAllAsync(
-      "SELECT tipo_servico id FROM servicos;"
+      'SELECT id, tipo_servico, nome_cliente, valor, descricao, data_servico FROM servicos_feitos;'
     );
     callback(resultados);
   } catch (error) {
