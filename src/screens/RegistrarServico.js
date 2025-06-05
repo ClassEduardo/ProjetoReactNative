@@ -58,6 +58,7 @@ export default function RegistrarServico() {
           selectedValue={tipoServico}
           onValueChange={(itemValue) => setTipoServico(itemValue)}
         >
+        <Picker.Item label='Selecione um serviço' value="" />
           {servicos.map(s => (
             <Picker.Item key={s.id} label={s.nome} value={s.nome} />
           ))}
