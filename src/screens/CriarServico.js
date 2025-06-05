@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet, Alert, ToastAndroid } from 'react-native';
 import { inserirServico } from '../services/ServicoBD';
 
 export default function CriarServico (){
@@ -14,7 +14,7 @@ export default function CriarServico (){
     }
     inserirServico(nome, descricao, (ok) => {
       if (ok) {
-        Alert.alert('Serviço cadastrado!');
+        ToastAndroid.show('Serviço cadastrado!', ToastAndroid.SHORT);
         setNome('');
         setDescricao('');
       } else {
@@ -53,6 +53,7 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 24,
     backgroundColor: '#fff',
+    width: '90%',
   },
   label: {
     fontWeight: 'bold',
@@ -70,7 +71,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   textarea: {
-    minHeight: 80,
+    minWidth: '100%',
     textAlignVertical: 'top',
   },
 });
