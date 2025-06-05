@@ -70,7 +70,6 @@ export async function listarServicosFeitos(callback) {
   }
 }
 
-
 export async function excluirServicoFeito(id, callback) {
   try {
     await db.runAsync(
