@@ -81,8 +81,10 @@ export default function ListarServicos() {
               multiline
               numberOfLines={3}
             />
-            <Button title="Salvar alterações" onPress={salvarEdicao} />
-            <Button title="Cancelar" color="gray" onPress={() => setModalVisible(false)} />
+            <View>
+              <Button title="Salvar alterações" onPress={salvarEdicao} />
+              <Button title="Cancelar" color="gray" onPress={() => setModalVisible(false)} />
+            </View>
           </View>
         </View>
       </Modal>
