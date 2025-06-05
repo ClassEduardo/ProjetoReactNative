@@ -29,7 +29,7 @@ export default function RegistrarServico() {
     }
     return somenteNumeros;
   };
-  
+
   const salvarServico = () => {
     if (!tipoServico || !valor.trim() || !data.trim()) {
       Alert.alert('Atenção', 'Preencha todos os campos obrigatórios!\nTipo de serviço, Valor do serviço e Data do serviço');
@@ -58,7 +58,7 @@ export default function RegistrarServico() {
           selectedValue={tipoServico}
           onValueChange={(itemValue) => setTipoServico(itemValue)}
         >
-        <Picker.Item label='Selecione um serviço' value="" />
+          <Picker.Item label='Selecione um serviço' value="" />
           {servicos.map(s => (
             <Picker.Item key={s.id} label={s.nome} value={s.nome} />
           ))}

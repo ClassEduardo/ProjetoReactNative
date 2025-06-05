@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Alert, ToastAndroid } from 'react-native';
 import { inserirServico } from '../services/ServicoBD';
 
-export default function CriarServico (){
+export default function CriarServico() {
   const [nome, setNome] = useState('');
   const [descricao, setDescricao] = useState('');
 
