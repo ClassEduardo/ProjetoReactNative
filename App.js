@@ -15,7 +15,7 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      <RegistrarServico />
+      <ListarServicos />
       <StatusBar style="auto" />
     </View>
   );
