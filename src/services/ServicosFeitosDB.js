@@ -37,3 +37,49 @@ export async function inserirServicoFeito(tipoServico, nomeCliente, valor, descr
     callback(false);
   }
 }
+
+export async function atualizarServicoFeito(id, tipoServico, nomeCliente, valor, descricao, data, callback) {
+  try {
+    await db.runAsync(
+      `UPDATE servicos_feitos 
+        SET tipo_servico = ?, nome_cliente = ?, valor = ?, descricao = ?, data_servico = ?
+        WHERE id = ?;`,
+      tipoServico,
+      nomeCliente,
+      valor,
+      descricao,
+      data,
+      id
+    );
+    callback(true);
+  } catch (error) {
+    console.log('Erro ao atualizar serviço feito:', error);
+    callback(false);
+  }
+}
+
+export async function listarServicosFeitos(callback) {
+  try {
+    const resultados = await db.getAllAsync(
+      "SELECT tipo_servico id FROM servicos;"
+    );
+    callback(resultados);
+  } catch (error) {
+    console.log('Erro ao obter serviços.', error);
+    callback([]);
+  }
+}
+
+
+export async function excluirServicoFeito(id, callback) {
+  try {
+    await db.runAsync(
+      `DELETE FROM servicos_feitos WHERE id = ?;`,
+      id
+    );
+    callback(true);
+  } catch (error) {
+    console.log('Erro ao excluir serviço feito:', error);
+    callback(false);
+  }
+}

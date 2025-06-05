@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import CriarServico from './src/screens/CriarServico';
 import RegistrarServico from './src/screens/RegistrarServico';
 import ListarServicos from './src/screens/ListarServicos';
+import ListarServicosFeitos from './src/screens/ListarServicosFeitos';
 import { createTableServicos } from './src/services/ServicoBD';
 import { createTableServicosFeitos } from './src/services/ServicosFeitosDB';
 
@@ -15,7 +16,7 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      <ListarServicos />
+      <ListarServicosFeitos />
       <StatusBar style="auto" />
     </View>
   );
