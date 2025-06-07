@@ -1,7 +1,7 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, View } from 'react-native';
 import { useEffect } from 'react';
-import DrawerNavigator from './src/navigation/DrawerNavigator';
+import DrawerNavigator from './src/navigation/drawerNavigator';
 import { createTableServicos } from './src/services/ServicoBD';
 import { createTableServicosFeitos } from './src/services/ServicosFeitosDB';
 
