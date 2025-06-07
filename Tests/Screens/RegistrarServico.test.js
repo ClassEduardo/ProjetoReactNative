@@ -3,9 +3,8 @@ import { RegistrarServico } from '../../src/screens/RegistrarServico';
 
 jest.mock('expo-sqlite');
 
-it('Renderiza corretamente', () => {
+test('Renderiza corretamente', () => {
     let tree;
-
     act(() => {
         tree = renderer.create(RegistrarServico);
     })
