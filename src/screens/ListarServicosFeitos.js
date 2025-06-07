@@ -21,7 +21,8 @@ export default function ListarServicosFeitos() {
   });
 
   async function carregarServicos() {
-    await listarServicosFeitos((lista) => {
+    await listarServicosFeitos((lista = []) => {
+      if (!Array.isArray(lista)) lista = [];
       const secoes = [];
       const agrupado = {};
       lista.forEach((item) => {
