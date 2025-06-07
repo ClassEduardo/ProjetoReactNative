@@ -81,7 +81,7 @@ export default function ListarServicos() {
               multiline
               numberOfLines={3}
             />
-            <View style={{ gap: 8 }}>
+            <View style={{ gap: 12 }}>
               <Button title="Salvar alterações" onPress={salvarEdicao} />
               <Button title="Cancelar" color="gray" onPress={() => setModalVisible(false)} />
             </View>
