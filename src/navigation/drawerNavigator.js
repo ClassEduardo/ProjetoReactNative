@@ -5,6 +5,7 @@ import CriarServico from '../screens/CriarServico';
 import RegistrarServico from '../screens/RegistrarServico';
 import ListarServicos from '../screens/ListarServicos';
 import ListarServicosFeitos from '../screens/ListarServicosFeitos';
+import RelatorioServicos from '../screens/RelatorioServicos';
 
 const Drawer = createDrawerNavigator();
 
@@ -12,6 +13,11 @@ export default function DrawerNavigator() {
   return (
     <NavigationContainer>
       <Drawer.Navigator initialRouteName="ListarServicosFeitos">
+        <Drawer.Screen
+          name="RelatorioServicos"
+          component={RelatorioServicos}
+          options={{ title: 'Relatório' }}
+        />
         <Drawer.Screen
           name="ListarServicosFeitos"
           component={ListarServicosFeitos}
