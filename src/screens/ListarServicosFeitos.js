@@ -6,7 +6,7 @@ import CenteredModal from '../components/CenteredModal';
 import ServicoFeitoItem from '../components/ServicoFeitoItem';
 import SaveCancelButtons from '../components/SaveCancelButtons';
 import { useFocusEffect } from '@react-navigation/native';
-import { listarServicosFeitos, atualizarServicoFeito, excluirServicoFeito, createTableServicosFeitos } from '../services/ServicosFeitosDB';
+import { listarServicosFeitos, atualizarServicoFeito } from '../services/ServicosFeitosDB';
 
 export default function ListarServicosFeitos() {
   const [servicosFeitos, setServicosFeitos] = useState([]);
@@ -62,6 +62,29 @@ export default function ListarServicosFeitos() {
         Alert.alert('Erro ao atualizar!');
       }
     });
+  }
+
+  function confirmarExcluir(id) {
+    Alert.alert(
+      'Confirmar exclus\u00e3o',
+      'Deseja realmente excluir este servi\u00e7o?',
+      [
+        { text: 'Cancelar', style: 'cancel' },
+        {
+          text: 'Excluir',
+          style: 'destructive',
+          onPress: () => {
+            excluirServicoFeito(id, (ok) => {
+              if (ok) {
+                carregarServicos();
+              } else {
+                Alert.alert('Erro ao excluir!');
+              }
+            });
+          },
+        },
+      ]
+    );
   }
 
   return (
@@ -121,7 +144,6 @@ export default function ListarServicosFeitos() {
             onChangeText: txt => setEditFields(f => ({ ...f, data_servico: txt })),
           }}
         />
-
         <SaveCancelButtons
           orientation="row"
           onSave={salvarEdicao}
