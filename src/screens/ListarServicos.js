@@ -52,7 +52,6 @@ export default function ListarServicos() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.titulo}>Tipos de serviço cadastrados</Text>
       <FlatList
         data={servicos}
         keyExtractor={item => item.id.toString()}
