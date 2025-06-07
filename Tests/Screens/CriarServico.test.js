@@ -3,7 +3,7 @@ import { CriarServico } from '../../src/screens/CriarServico';
 
 jest.mock('expo-sqlite');
 
-it('Renderiza corretamente', () => {
+test('Renderiza corretamente', () => {
     let tree;
 
     act(() => {
