@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useCallback, useState } from 'react';
 import { View, Text, StyleSheet, SectionList, TouchableOpacity, Alert, Modal, TextInput, Button } from 'react-native';
-import { listarServicosFeitos, atualizarServicoFeito, excluirServicoFeito } from '../services/ServicosFeitosDB';
+import { useFocusEffect } from '@react-navigation/native';
+import { listarServicosFeitos, atualizarServicoFeito, excluirServicoFeito, createTableServicosFeitos } from '../services/ServicosFeitosDB';
 
 export default function ListarServicosFeitos() {
   const [servicosFeitos, setServicosFeitos] = useState([]);
@@ -29,11 +30,13 @@ export default function ListarServicosFeitos() {
     });
   }
 
-  useEffect(() => {
-    carregarServicos();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      createTableServicosFeitos().catch(() => {});
+      carregarServicos();
+    }, [])
+  );
 
-  // Exclusão com confirmação
   function confirmarExcluir(id) {
     Alert.alert(
       "Confirmação",
@@ -52,7 +55,6 @@ export default function ListarServicosFeitos() {
     });
   }
 
-  // Atualização
   function abrirModalEditar(servico) {
     setServicoEditando(servico);
     setEditFields({ ...servico });
@@ -77,7 +79,6 @@ export default function ListarServicosFeitos() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.titulo}>Serviços realizados</Text>
       <SectionList
         sections={servicosFeitos}
         keyExtractor={item => item.id.toString()}

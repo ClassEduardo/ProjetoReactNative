@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useCallback  } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Alert, ToastAndroid } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { listarServicos } from '../services/ServicoBD';
 import { inserirServicoFeito } from '../services/ServicosFeitosDB';
+import { useFocusEffect } from '@react-navigation/native';
 
 export default function RegistrarServico() {
   const [servicos, setServicos] = useState([]);
@@ -12,9 +13,12 @@ export default function RegistrarServico() {
   const [descricao, setDescricao] = useState('');
   const [data, setData] = useState('');
 
-  useEffect(() => {
-    listarServicos((lista) => setServicos(lista));
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      listarServicos((lista) => setServicos(lista));
+    }, [])
+  );
+
 
   const formatarData = (texto) => {
     const somenteNumeros = texto.replace(/[^0-9]/g, '').slice(0, 8);
@@ -112,7 +116,6 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 24,
     backgroundColor: "#fff",
-    width: '90%',
   },
   label: {
     fontWeight: "bold",
