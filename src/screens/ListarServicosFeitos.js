@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Text, StyleSheet, SectionList, Alert } from 'react-native';
 import ScreenContainer from '../components/ScreenContainer';
 import LabeledInput from '../components/LabeledInput';
@@ -20,6 +20,12 @@ export default function ListarServicosFeitos() {
     data_servico: ''
   });
 
+   useFocusEffect(
+    useCallback(() => {
+      carregarServicos();
+    }, [])
+  );
+
   async function carregarServicos() {
     await listarServicosFeitos((lista = []) => {
       if (!Array.isArray(lista)) lista = [];
@@ -30,8 +36,10 @@ export default function ListarServicosFeitos() {
         agrupado[item.data_servico].push(item);
       });
       Object.keys(agrupado).forEach(data => {
-      secoes.push({ title: data, data: agrupado[data]})})
-    })
+        secoes.push({ title: data, data: agrupado[data]});
+      });
+      setServicosFeitos(secoes);
+    });
   }
 
   function abrirModalEditar(servico) {
