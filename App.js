@@ -1,10 +1,7 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { useEffect } from 'react';
-import CriarServico from './src/screens/CriarServico';
-import RegistrarServico from './src/screens/RegistrarServico';
-import ListarServicos from './src/screens/ListarServicos';
-import ListarServicosFeitos from './src/screens/ListarServicosFeitos';
+import DrawerNavigator from './src/navigation/DrawerNavigator';
 import { createTableServicos } from './src/services/ServicoBD';
 import { createTableServicosFeitos } from './src/services/ServicosFeitosDB';
 
@@ -16,7 +13,7 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      <ListarServicosFeitos />
+      <DrawerNavigator />
       <StatusBar style="auto" />
     </View>
   );
@@ -26,8 +23,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
     paddingTop: 24,
   },
 });
