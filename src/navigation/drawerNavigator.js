@@ -15,22 +15,22 @@ export default function DrawerNavigator() {
         <Drawer.Screen
           name="ListarServicosFeitos"
           component={ListarServicosFeitos}
-          options={{ title: 'Serviços Feitos' }}
+          options={{ title: 'Serviços feitos' }}
         />
         <Drawer.Screen
           name="CriarServico"
           component={CriarServico}
-          options={{ title: 'Cadastrar Serviço' }}
+          options={{ title: 'Cadastrar serviço' }}
         />
         <Drawer.Screen
           name="RegistrarServico"
           component={RegistrarServico}
-          options={{ title: 'Registrar Serviço' }}
+          options={{ title: 'Registrar serviço' }}
         />
         <Drawer.Screen
           name="ListarServicos"
           component={ListarServicos}
-          options={{ title: 'Tipos de Serviço' }}
+          options={{ title: 'Tipos de serviço' }}
         />
       </Drawer.Navigator>
     </NavigationContainer>

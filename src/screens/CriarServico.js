@@ -53,7 +53,6 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 24,
     backgroundColor: '#fff',
-    width: '90%',
   },
   label: {
     fontWeight: 'bold',
