@@ -24,9 +24,9 @@ export default function DrawerNavigator() {
           options={{ title: 'Serviços feitos' }}
         />
         <Drawer.Screen
-          name="CriarServico"
-          component={CriarServico}
-          options={{ title: 'Cadastrar serviço' }}
+          name="ListarServicos"
+          component={ListarServicos}
+          options={{ title: 'Tipos de serviço' }}
         />
         <Drawer.Screen
           name="RegistrarServico"
@@ -34,9 +34,9 @@ export default function DrawerNavigator() {
           options={{ title: 'Registrar serviço' }}
         />
         <Drawer.Screen
-          name="ListarServicos"
-          component={ListarServicos}
-          options={{ title: 'Tipos de serviço' }}
+          name="CriarServico"
+          component={CriarServico}
+          options={{ title: 'Cadastrar serviço' }}
         />
       </Drawer.Navigator>
     </NavigationContainer>

@@ -66,7 +66,7 @@ export async function listarServicosFeitos(callback) {
     callback(resultados);
   } catch (error) {
     console.log('Erro ao obter serviços.', error);
-    callback();
+    callback([]);
   }
 }
 

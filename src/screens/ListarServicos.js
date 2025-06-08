@@ -1,6 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, StyleSheet, TouchableOpacity, Modal, TextInput, Button, Alert, ToastAndroid } from 'react-native';
-import { listarServicos, atualizarServico } from '../services/ServicoBD'; // ajuste o caminho se necessário
+import { View, Text, FlatList, StyleSheet, Button, Alert, ToastAndroid } from 'react-native';
+import SaveCancelButtons from '../components/SaveCancelButtons';
+import ScreenContainer from '../components/ScreenContainer';
+import LabeledInput from '../components/LabeledInput';
+import CenteredModal from '../components/CenteredModal';
+import ServicoItem from '../components/ServicoItem';
+import { listarServicos, atualizarServico } from '../services/ServicoBD';
 
 export default function ListarServicos() {
   const [servicos, setServicos] = useState([]);
@@ -41,53 +46,42 @@ export default function ListarServicos() {
   };
 
   const renderItem = ({ item }) => (
-    <View style={styles.servicoItem}>
-      <Text style={styles.nome}>{item.nome}</Text>
-      <Text style={styles.descricao}>{item.descricao}</Text>
-      <TouchableOpacity style={styles.botaoEditar} onPress={() => abrirModalEdicao(item)}>
-        <Text style={{ color: '#007bff' }}>Editar</Text>
-      </TouchableOpacity>
-    </View>
+    <ServicoItem
+      nome={item.nome}
+      descricao={item.descricao}
+      onEdit={() => abrirModalEdicao(item)}
+    />
   );
 
   return (
-    <View style={styles.container}>
+    <ScreenContainer style={styles.container}>
       <FlatList
         data={servicos}
         keyExtractor={item => item.id.toString()}
         renderItem={renderItem}
-        ListEmptyComponent={<Text style={{textAlign: 'center'}}>Nenhum serviço cadastrado.</Text>}
+        ListEmptyComponent={<Text style={{ textAlign: 'center' }}>Não há de serviço cadastrado.</Text>}
       />
-      <Modal
-        visible={modalVisible}
-        animationType="slide"
-        transparent
-        onRequestClose={() => setModalVisible(false)}
-      >
-        <View style={styles.modalBg}>
-          <View style={styles.modal}>
-            <Text style={styles.label}>Nome do serviço</Text>
-            <TextInput
-              style={styles.input}
-              value={nomeEdit}
-              onChangeText={setNomeEdit}
-            />
-            <Text style={styles.label}>Descrição</Text>
-            <TextInput
-              style={[styles.input, styles.textarea]}
-              value={descricaoEdit}
-              onChangeText={setDescricaoEdit}
-              multiline
-              numberOfLines={3}
-            />
-            <View style={{ gap: 12 }}>
-              <Button title="Salvar alterações" onPress={salvarEdicao} />
-              <Button title="Cancelar" color="gray" onPress={() => setModalVisible(false)} />
-            </View>
-          </View>
-        </View>
-      </Modal>
-    </View>
+      <CenteredModal visible={modalVisible} onRequestClose={() => setModalVisible(false)}>
+        <LabeledInput
+          label="Nome do serviço"
+          inputProps={{ value: nomeEdit, onChangeText: setNomeEdit }}
+        />
+        <LabeledInput
+          label="Descrição"
+          inputProps={{
+            value: descricaoEdit,
+            onChangeText: setDescricaoEdit,
+            multiline: true,
+            numberOfLines: 3,
+            style: styles.textarea,
+          }}
+        />
+        <SaveCancelButtons
+          onSave={salvarEdicao}
+          onCancel={() => setModalVisible(false)}
+        />
+      </CenteredModal>
+    </ScreenContainer>
   );
 }
 
@@ -103,51 +97,8 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     textAlign: 'center',
   },
-  servicoItem: {
-    backgroundColor: '#f3f3f3',
-    marginBottom: 12,
-    borderRadius: 6,
-    padding: 12,
-  },
-  nome: {
-    fontWeight: 'bold',
-    fontSize: 16,
-  },
-  descricao: {
-    marginBottom: 8,
-  },
-  botaoEditar: {
-    alignSelf: 'flex-end',
-  },
-  modalBg: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.4)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  modal: {
-    backgroundColor: '#fff',
-    borderRadius: 8,
-    padding: 24,
-    width: '90%',
-  },
-  label: {
-    fontWeight: 'bold',
-    marginTop: 8,
-    marginBottom: 4,
-  },
-  input: {
-    borderColor: '#bbb',
-    borderWidth: 1,
-    borderRadius: 6,
-    padding: 10,
-    fontSize: 16,
-    backgroundColor: '#f9f9f9',
-    marginBottom: 10,
-  },
   textarea: {
     height: 70,
     textAlignVertical: 'top',
   },
 });
-

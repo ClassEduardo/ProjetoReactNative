@@ -1,6 +1,7 @@
 import React, { useState, useCallback  } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Alert, ToastAndroid } from 'react-native';
-import { Picker } from '@react-native-picker/picker';
+import { View, Text, Button, StyleSheet, Alert, ToastAndroid } from 'react-native';
+import ScreenContainer from '../components/ScreenContainer';
+import LabeledInput from '../components/LabeledInput';import { Picker } from '@react-native-picker/picker';
 import { listarServicos } from '../services/ServicoBD';
 import { inserirServicoFeito } from '../services/ServicosFeitosDB';
 import { useFocusEffect } from '@react-navigation/native';
@@ -54,8 +55,7 @@ export default function RegistrarServico() {
     });
   };
 
-  return (
-    <View style={styles.container}>
+  return (    <ScreenContainer style={styles.container}>
       <Text style={styles.label}>Tipo de serviço</Text>
       <View style={styles.pickerContainer}>
         <Picker
@@ -68,46 +68,53 @@ export default function RegistrarServico() {
           ))}
         </Picker>
       </View>
-
-      <Text style={styles.label}>Nome do cliente</Text>
-      <TextInput
-        style={styles.input}
-        placeholder='Ex: João da Silva'
-        value={nomeCliente}
-        onChangeText={setNomeCliente}
+      <LabeledInput
+        label="Nome do cliente"
+        inputProps={{
+          placeholder: 'Ex: João da Silva',
+          value: nomeCliente,
+          onChangeText: setNomeCliente,
+          style: styles.input,
+        }}
       />
 
-      <Text style={styles.label}>Valor do serviço</Text>
-      <TextInput
-        style={styles.input}
-        placeholder='Ex: 120'
-        value={valor}
-        onChangeText={setValor}
-        keyboardType='numeric'
+      <LabeledInput
+        label="Valor do serviço"
+        inputProps={{
+          placeholder: 'Ex: 120',
+          value: valor,
+          onChangeText: setValor,
+          keyboardType: 'numeric',
+          style: styles.input,
+        }}
       />
 
-      <Text style={styles.label}>Descrição</Text>
-      <TextInput
-        style={[styles.input, styles.textarea]}
-        placeholder='Ex: Troca de tela com peça original'
-        value={descricao}
-        onChangeText={setDescricao}
-        multiline
-        numberOfLines={3}
+      <LabeledInput
+        label="Descrição"
+        inputProps={{
+          placeholder: 'Ex: Troca de tela com peça original',
+          value: descricao,
+          onChangeText: setDescricao,
+          multiline: true,
+          numberOfLines: 3,
+          style: [styles.input, styles.textarea],
+        }}
       />
 
-      <Text style={styles.label}>Data do serviço</Text>
-      <TextInput
-        style={styles.input}
-        placeholder='Ex: 05/06/2025'
-        value={data}
-        onChangeText={(t) => setData(formatarData(t))}
-        keyboardType='numbers-and-punctuation'
-        maxLength={10}
+      <LabeledInput
+        label="Data do serviço"
+        inputProps={{
+          placeholder: 'Ex: 05/06/2025',
+          value: data,
+          onChangeText: (t) => setData(formatarData(t)),
+          keyboardType: 'numbers-and-punctuation',
+          maxLength: 10,
+          style: styles.input,
+        }}
       />
 
       <Button title='Salvar serviço' onPress={salvarServico} />
-    </View>
+    </ScreenContainer>
   );
 }
 
