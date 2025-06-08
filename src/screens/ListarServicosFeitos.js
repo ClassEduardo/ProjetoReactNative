@@ -145,7 +145,6 @@ export default function ListarServicosFeitos() {
           }}
         />
         <SaveCancelButtons
-          orientation="row"
           onSave={salvarEdicao}
           onCancel={() => setModalVisible(false)}
         />
