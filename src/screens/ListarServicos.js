@@ -5,7 +5,7 @@ import ScreenContainer from '../components/ScreenContainer';
 import LabeledInput from '../components/LabeledInput';
 import CenteredModal from '../components/CenteredModal';
 import ServicoItem from '../components/ServicoItem';
-import { listarServicos, atualizarServico } from '../services/ServicoBD';
+import { listarServicos, atualizarServico, excluirServico } from '../services/ServicoBD';
 
 export default function ListarServicos() {
   const [servicos, setServicos] = useState([]);
@@ -45,11 +45,35 @@ export default function ListarServicos() {
     });
   };
 
+  const confirmarExcluir = (id) => {
+    Alert.alert(
+      'Confirmar exclusão',
+      'Deseja realmente excluir este serviço?',
+      [
+        { text: 'Cancelar', style: 'cancel' },
+        {
+          text: 'Excluir',
+          style: 'destructive',
+          onPress: () => {
+            excluirServico(id, (ok) => {
+              if (ok) {
+                buscarServicos();
+              } else {
+                Alert.alert('Erro ao excluir!');
+              }
+            });
+          },
+        },
+      ]
+    );
+  };
+
   const renderItem = ({ item }) => (
     <ServicoItem
       nome={item.nome}
       descricao={item.descricao}
       onEdit={() => abrirModalEdicao(item)}
+      onDelete={() => confirmarExcluir(item.id)}
     />
   );
 
