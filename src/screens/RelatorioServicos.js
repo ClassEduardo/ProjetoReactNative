@@ -1,7 +1,9 @@
 import React, { useState, useCallback } from 'react';
 import { Text, StyleSheet } from 'react-native';
 import ScreenContainer from '../components/ScreenContainer';
-import Card from '../components/Card';import { useFocusEffect } from '@react-navigation/native';
+import Card from '../components/Card';
+import { useFocusEffect } from '@react-navigation/native';
+import { formatarBRL } from '../utils/format';
 import { obterEstatisticasServicos } from '../services/ServicosFeitosDB';
 
 export default function RelatorioServicos() {
@@ -31,15 +33,15 @@ export default function RelatorioServicos() {
       </Card>
 
       <Card>
-        <Text style={styles.item}>Serviço mais caro: {stats.maisCaro.tipo_servico} - {stats.maisCaro.valor}</Text>
-        <Text style={styles.item}>Serviço mais barato: {stats.maisBarato.tipo_servico} - {stats.maisBarato.valor}</Text>
+        <Text style={styles.item}>Serviço mais caro: {stats.maisCaro.tipo_servico} - {formatarBRL(stats.maisCaro.valor)}</Text>
+        <Text style={styles.item}>Serviço mais barato: {stats.maisBarato.tipo_servico} - {formatarBRL(stats.maisBarato.valor)}</Text>
       </Card>
 
       <Card>
         <Text style={styles.item}>Total de serviços realizados: {stats.totalServicos}</Text>
-        <Text style={styles.item}>Montante faturado: {stats.montanteTotal}</Text>
+        <Text style={styles.item}>Montante faturado: {formatarBRL(stats.montanteTotal)}</Text>
         <Text style={styles.item}>Média de serviços por mês: {stats.mediaServicosMes.toFixed(2)}</Text>
-        <Text style={styles.item}>Média de faturamento por mês: {stats.mediaValorMes.toFixed(2)}</Text>
+        <Text style={styles.item}>Média de faturamento por mês: {formatarBRL(stats.mediaValorMes)}</Text>
       </Card>
     </ScreenContainer>
   );
