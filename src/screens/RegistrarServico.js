@@ -55,7 +55,8 @@ export default function RegistrarServico() {
     });
   };
 
-  return (    <ScreenContainer style={styles.container}>
+  return (    
+  <ScreenContainer style={styles.container}>
       <Text style={styles.label}>Tipo de serviço</Text>
       <View style={styles.pickerContainer}>
         <Picker
