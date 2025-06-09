@@ -5,6 +5,7 @@ import LabeledInput from '../components/LabeledInput';
 import CenteredModal from '../components/CenteredModal';
 import ServicoFeitoItem from '../components/ServicoFeitoItem';
 import SaveCancelButtons from '../components/SaveCancelButtons';
+import LabeledPicker from '../components/LabeledPicker';
 import { useFocusEffect } from '@react-navigation/native';
 import { listarServicosFeitos, atualizarServicoFeito, excluirServicoFeito } from '../services/ServicosFeitosDB';
 import { formatarData } from '../utils/format';
@@ -115,12 +116,10 @@ export default function ListarServicosFeitos() {
         ListEmptyComponent={<Text style={{ textAlign: 'center', marginTop: 32 }}>Nenhum serviço registrado.</Text>}
       />
       <CenteredModal visible={modalVisible} onRequestClose={() => setModalVisible(false)}>
-        <LabeledInput
+        <LabeledPicker
           label="Tipo de serviço"
-          inputProps={{
-            value: editFields.tipo_servico,
-            onChangeText: txt => setEditFields(f => ({ ...f, tipo_servico: txt })),
-          }}
+          selectedValue={editFields.tipo_servico}
+          onValueChange={txt => setEditFields(f => ({ ...f, tipo_servico: txt }))}
         />
         <LabeledInput
           label="Nome do cliente"
