@@ -1,17 +1,30 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { Button, StyleSheet, Alert, ToastAndroid } from 'react-native';
+import { Picker } from '@react-native-picker/picker';
 import ScreenContainer from '../components/ScreenContainer';
-import LabeledInput from '../components/LabeledInput'; 
+import LabeledInput from '../components/LabeledInput';
 import LabeledPicker from '../components/LabeledPicker';
+import { listarServicos } from '../services/ServicoBD';
 import { inserirServicoFeito } from '../services/ServicosFeitosDB';
+import { useFocusEffect } from '@react-navigation/native';
 import { formatarData } from '../utils/format';
 
 export default function RegistrarServico() {
+  const [servicos, setServicos] = useState([]);
   const [tipoServico, setTipoServico] = useState('');
   const [nomeCliente, setNomeCliente] = useState('');
   const [valor, setValor] = useState('');
   const [descricao, setDescricao] = useState('');
   const [data, setData] = useState('');
+
+  useFocusEffect(
+    useCallback(() => {
+      listarServicos((lista) => {
+        if (Array.isArray(lista)) setServicos(lista);
+        else setServicos([]);
+      });
+    }, [])
+  );
 
   const salvarServico = () => {
     if (!tipoServico || !valor.trim() || !data.trim()) {
@@ -44,7 +57,12 @@ export default function RegistrarServico() {
         label="Tipo de serviço"
         selectedValue={tipoServico}
         onValueChange={(itemValue) => setTipoServico(itemValue)}
-      />
+      >
+        <Picker.Item label="Selecione um serviço" value="" />
+        {servicos.map((s) => (
+          <Picker.Item key={s.id} label={s.nome} value={s.nome} />
+        ))}
+      </LabeledPicker>
       <LabeledInput
         label="Nome do cliente"
         inputProps={{

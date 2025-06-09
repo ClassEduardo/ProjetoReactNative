@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { Text, StyleSheet, SectionList, Alert } from 'react-native';
 import ScreenContainer from '../components/ScreenContainer';
 import LabeledInput from '../components/LabeledInput';
@@ -8,9 +8,12 @@ import SaveCancelButtons from '../components/SaveCancelButtons';
 import LabeledPicker from '../components/LabeledPicker';
 import { useFocusEffect } from '@react-navigation/native';
 import { listarServicosFeitos, atualizarServicoFeito, excluirServicoFeito } from '../services/ServicosFeitosDB';
+import { listarServicos } from '../services/ServicoBD';
+import { Picker } from '@react-native-picker/picker';
 import { formatarData } from '../utils/format';
 
 export default function ListarServicosFeitos() {
+  const [servicos, setServicos] = useState([]);
   const [servicosFeitos, setServicosFeitos] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [servicoEditando, setServicoEditando] = useState(null);
@@ -25,6 +28,10 @@ export default function ListarServicosFeitos() {
   useFocusEffect(
     useCallback(() => {
       carregarServicos();
+      listarServicos((lista) => {
+        if (Array.isArray(lista)) setServicos(lista);
+        else setServicos([]);
+      });
     }, [])
   );
 
@@ -120,7 +127,12 @@ export default function ListarServicosFeitos() {
           label="Tipo de serviço"
           selectedValue={editFields.tipo_servico}
           onValueChange={txt => setEditFields(f => ({ ...f, tipo_servico: txt }))}
-        />
+        >
+          <Picker.Item label="Selecione um serviço" value="" />
+          {servicos.map((s) => (
+            <Picker.Item key={s.id} label={s.nome} value={s.nome} />
+          ))}
+        </LabeledPicker>
         <LabeledInput
           label="Nome do cliente"
           inputProps={{
