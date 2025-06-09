@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { listarServicos } from '../services/ServicoBD';
+import { useFocusEffect} from '@react-navigation/native';
 
 export default function LabeledPicker({
   label,
@@ -13,15 +14,17 @@ export default function LabeledPicker({
 }) {
   const [servicos, setServicos] = useState([]);
 
-  useEffect(() => {
-    listarServicos(lista => {
-      if (Array.isArray(lista)) {
-        setServicos(lista);
-      } else {
-        setServicos([]);
-      }
-    });
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      listarServicos((lista) => {
+        if (Array.isArray(lista)) {
+          setServicos(lista);
+        } else {
+          setServicos([]);
+        }
+      });
+    }, [])
+  );
 
   const defaultItems = (
     <>
