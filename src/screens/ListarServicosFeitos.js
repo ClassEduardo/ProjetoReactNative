@@ -7,10 +7,7 @@ import ServicoFeitoItem from '../components/ServicoFeitoItem';
 import SaveCancelButtons from '../components/SaveCancelButtons';
 import LabeledPicker from '../components/LabeledPicker';
 import { useFocusEffect } from '@react-navigation/native';
-import { listarServicosFeitos, atualizarServicoFeito, excluirServicoFeito } from '../services/ServicosFeitosDB';
-import { listarServicos } from '../services/ServicoBD';
-import { Picker } from '@react-native-picker/picker';
-import { formatarData } from '../utils/format';
+import { listarServicosFeitos, atualizarServicoFeito, excluirServicoFeito, createTableServicosFeitos } from '../services/ServicosFeitosDB';
 
 export default function ListarServicosFeitos() {
   const [servicos, setServicos] = useState([]);
@@ -82,29 +79,6 @@ export default function ListarServicosFeitos() {
     });
   }
 
-  function confirmarExcluir(id) {
-    Alert.alert(
-      'Confirmar exclus\u00e3o',
-      'Deseja realmente excluir este servi\u00e7o?',
-      [
-        { text: 'Cancelar', style: 'cancel' },
-        {
-          text: 'Excluir',
-          style: 'destructive',
-          onPress: () => {
-            excluirServicoFeito(id, (ok) => {
-              if (ok) {
-                carregarServicos();
-              } else {
-                Alert.alert('Erro ao excluir!');
-              }
-            });
-          },
-        },
-      ]
-    );
-  }
-
   return (
     <ScreenContainer style={styles.container}>
       <SectionList
@@ -166,6 +140,7 @@ export default function ListarServicosFeitos() {
               setEditFields(f => ({ ...f, data_servico: formatarData(txt) })),
           }}
         />
+
         <SaveCancelButtons
           onSave={salvarEdicao}
           onCancel={() => setModalVisible(false)}
