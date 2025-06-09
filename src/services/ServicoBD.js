@@ -31,7 +31,7 @@ export async function listarServicos(callback) {
     const resultados = await db.getAllAsync(
       "SELECT id, nome, descricao FROM servicos;"
     );
-    callback(resultados);
+    callback(Array.isArray(resultados) ? resultados : []);
   } catch (error) {
     console.log('Erro ao obter serviços.', error);
     callback([]);
