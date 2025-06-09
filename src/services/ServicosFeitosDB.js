@@ -7,7 +7,7 @@ export async function createTableServicosFeitos() {
     await db.execAsync(
       `CREATE TABLE IF NOT EXISTS servicos_feitos (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        tipo_servico TEXT,
+        servico TEXT,
         nome_cliente TEXT,
         valor TEXT,
         descricao TEXT,
@@ -19,13 +19,13 @@ export async function createTableServicosFeitos() {
   }
 }
 
-export async function inserirServicoFeito(tipoServico, nomeCliente, valor, descricao, data, callback) {
+export async function inserirServicoFeito(servico, nomeCliente, valor, descricao, data, callback) {
   try {
     await db.runAsync(
       `INSERT INTO servicos_feitos 
-        (tipo_servico, nome_cliente, valor, descricao, data_servico)
+        (servico, nome_cliente, valor, descricao, data_servico)
         VALUES (?, ?, ?, ?, ?);`,
-      tipoServico,
+      servico,
       nomeCliente,
       valor,
       descricao,
@@ -38,13 +38,13 @@ export async function inserirServicoFeito(tipoServico, nomeCliente, valor, descr
   }
 }
 
-export async function atualizarServicoFeito(id, tipoServico, nomeCliente, valor, descricao, data, callback) {
+export async function atualizarServicoFeito(id, servico, nomeCliente, valor, descricao, data, callback) {
   try {
     await db.runAsync(
       `UPDATE servicos_feitos 
-        SET tipo_servico = ?, nome_cliente = ?, valor = ?, descricao = ?, data_servico = ?
+        SET servico = ?, nome_cliente = ?, valor = ?, descricao = ?, data_servico = ?
         WHERE id = ?;`,
-      tipoServico,
+      servico,
       nomeCliente,
       valor,
       descricao,
@@ -61,7 +61,7 @@ export async function atualizarServicoFeito(id, tipoServico, nomeCliente, valor,
 export async function listarServicosFeitos(callback) {
   try {
     const resultados = await db.getAllAsync(
-      'SELECT id, tipo_servico, nome_cliente, valor, descricao, data_servico FROM servicos_feitos;'
+      'SELECT id, servico, nome_cliente, valor, descricao, data_servico FROM servicos_feitos;'
     );
     callback(resultados);
   } catch (error) {
@@ -83,19 +83,6 @@ export async function excluirServicoFeito(id, callback) {
   }
 }
 
-export async function atualizarTipoEmServicosFeitos(antigoNome, novoNome, callback) {
-  try {
-    await db.runAsync(
-      'UPDATE servicos_feitos SET tipo_servico = ? WHERE tipo_servico = ?;',
-      novoNome,
-      antigoNome
-    );
-    callback(true);
-  } catch (err) {
-    console.log('Erro ao propagar nome de serviço:', err);
-    callback(false);
-  }
-}
 
 export async function obterEstatisticasServicos() {
   try {
@@ -106,22 +93,22 @@ export async function obterEstatisticasServicos() {
     const valorTotal = totalRes[0]?.valor_total || 0;
 
     const top3 = await db.getAllAsync(
-      `SELECT tipo_servico, COUNT(*) as quantidade
+      `SELECT servico, COUNT(*) as quantidade
          FROM servicos_feitos
-         GROUP BY tipo_servico
+         GROUP BY servico
          ORDER BY quantidade DESC
          LIMIT 3;`
     );
 
     const caro = await db.getAllAsync(
-      `SELECT tipo_servico, valor
+      `SELECT servico, valor
          FROM servicos_feitos
          ORDER BY CAST(valor AS REAL) DESC
          LIMIT 1;`
     );
 
     const barato = await db.getAllAsync(
-      `SELECT tipo_servico, valor
+      `SELECT servico, valor
          FROM servicos_feitos
          ORDER BY CAST(valor AS REAL) ASC
          LIMIT 1;`
@@ -139,8 +126,8 @@ export async function obterEstatisticasServicos() {
 
     return {
       top3,
-      maisCaro: caro[0] || { tipo_servico: '', valor: 0 },
-      maisBarato: barato[0] || { tipo_servico: '', valor: 0 },
+      maisCaro: caro[0] || { servico: '', valor: 0 },
+      maisBarato: barato[0] || { servico: '', valor: 0 },
       totalServicos: total,
       montanteTotal: valorTotal || 0,
       mediaServicosMes: total / qtdMeses,

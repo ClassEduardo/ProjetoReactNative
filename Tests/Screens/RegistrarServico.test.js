@@ -1,5 +1,5 @@
 import renderer, { act } from 'react-test-renderer';
-import { RegistrarServico } from '../../src/screens/RegistrarServico';
+import  RegistrarServico  from '../../src/screens/RegistrarServico';
 
 jest.mock('expo-sqlite');
 

@@ -5,21 +5,17 @@ import LabeledInput from '../components/LabeledInput';
 import CenteredModal from '../components/CenteredModal';
 import ServicoFeitoItem from '../components/ServicoFeitoItem';
 import SaveCancelButtons from '../components/SaveCancelButtons';
-import LabeledPicker from '../components/LabeledPicker';
 import { useFocusEffect } from '@react-navigation/native';
-import { listarServicosFeitos, atualizarServicoFeito, excluirServicoFeito, createTableServicosFeitos } from '../services/ServicosFeitosDB';
-import { Picker } from '@react-native-picker/picker';
-import { listarServicos } from '../services/ServicoBD';
+import { listarServicosFeitos, atualizarServicoFeito, excluirServicoFeito } from '../services/ServicosFeitosDB';
 import { formatarData } from '../utils/format';
 
 
 export default function ListarServicosFeitos() {
-  const [servicos, setServicos] = useState([]);
   const [servicosFeitos, setServicosFeitos] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [servicoEditando, setServicoEditando] = useState(null);
   const [editFields, setEditFields] = useState({
-    tipo_servico: '',
+    servico: '',
     nome_cliente: '',
     valor: '',
     descricao: '',
@@ -29,10 +25,6 @@ export default function ListarServicosFeitos() {
   useFocusEffect(
     useCallback(() => {
       carregarServicos();
-      listarServicos((lista) => {
-        if (Array.isArray(lista)) setServicos(lista);
-        else setServicos([]);
-      });
     }, [])
   );
 
@@ -68,8 +60,8 @@ export default function ListarServicosFeitos() {
   }
 
   function salvarEdicao() {
-    const { id, tipo_servico, nome_cliente, valor, descricao, data_servico } = editFields;
-    if (!tipo_servico.trim() || !nome_cliente.trim() || !valor.trim() || !data_servico.trim()) {
+    const { id, servico, nome_cliente, valor, descricao, data_servico } = editFields;
+    if (!servico.trim() || !nome_cliente.trim() || !valor.trim() || !data_servico.trim()) {
       Alert.alert('Atenção', 'Preencha todos os campos obrigatórios!');
       return;
     }
@@ -77,7 +69,7 @@ export default function ListarServicosFeitos() {
       Alert.alert('Atenção', 'Informe a data com dia e mês (DD/MM)');
       return;
     }
-    atualizarServicoFeito(id, tipo_servico, nome_cliente, valor, descricao, data_servico, (ok) => {
+    atualizarServicoFeito(id, servico, nome_cliente, valor, descricao, data_servico, (ok) => {
       if (ok) {
         setModalVisible(false);
         carregarServicos();
@@ -85,6 +77,29 @@ export default function ListarServicosFeitos() {
         Alert.alert('Erro ao atualizar!');
       }
     });
+  }
+
+  function confirmarExcluir(id) {
+    Alert.alert(
+      'Confirmar exclusão',
+      'Deseja realmente excluir este serviço?',
+      [
+        { text: 'Cancelar', style: 'cancel' },
+        {
+          text: 'Excluir',
+          style: 'destructive',
+          onPress: () => {
+            excluirServicoFeito(id, (ok) => {
+              if (ok) {
+                carregarServicos();
+              } else {
+                Alert.alert('Erro ao excluir!');
+              }
+            });
+          },
+        },
+      ]
+    );
   }
 
   return (
@@ -105,16 +120,13 @@ export default function ListarServicosFeitos() {
         ListEmptyComponent={<Text style={{ textAlign: 'center', marginTop: 32 }}>Nenhum serviço registrado.</Text>}
       />
       <CenteredModal visible={modalVisible} onRequestClose={() => setModalVisible(false)}>
-        <LabeledPicker
-          label="Tipo de serviço"
-          selectedValue={editFields.tipo_servico}
-          onValueChange={txt => setEditFields(f => ({ ...f, tipo_servico: txt }))}
-        >
-          <Picker.Item label="Selecione um serviço" value="" />
-          {servicos.map((s) => (
-            <Picker.Item key={s.id} label={s.nome} value={s.nome} />
-          ))}
-        </LabeledPicker>
+        <LabeledInput
+          label="Nome do serviço"
+          inputProps={{
+            value: editFields.servico,
+            onChangeText: txt => setEditFields(f => ({ ...f, servico: txt })),
+          }}
+        />
         <LabeledInput
           label="Nome do cliente"
           inputProps={{

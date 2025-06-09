@@ -28,13 +28,13 @@ export default function RelatorioServicos() {
       <Card>
         <Text style={styles.title}>Top 3 serviços mais realizados</Text>
         {stats.top3.map((item, index) => (
-          <Text key={index} style={styles.item}>{`${item.tipo_servico} - ${item.quantidade}`}</Text>
+          <Text key={index} style={styles.item}>{`${item.servico} - ${item.quantidade}`}</Text>
         ))}
       </Card>
 
       <Card>
-        <Text style={styles.item}>Serviço mais caro: {stats.maisCaro.tipo_servico} - {formatarBRL(stats.maisCaro.valor)}</Text>
-        <Text style={styles.item}>Serviço mais barato: {stats.maisBarato.tipo_servico} - {formatarBRL(stats.maisBarato.valor)}</Text>
+        <Text style={styles.item}>Serviço mais caro: {stats.maisCaro.servico} - {formatarBRL(stats.maisCaro.valor)}</Text>
+        <Text style={styles.item}>Serviço mais barato: {stats.maisBarato.servico} - {formatarBRL(stats.maisBarato.valor)}</Text>
       </Card>
 
       <Card>

@@ -4,7 +4,7 @@ import { formatarBRL } from '../utils/format';
 export default function ServicoFeitoItem({ item, onUpdate, onDelete }) {
   return (
     <View style={styles.servicoItem}>
-      <Text style={styles.tipo}>{item.tipo_servico}</Text>
+      <Text style={styles.tipo}>{item.servico}</Text>
       <Text style={styles.cliente}>Cliente: {item.nome_cliente}</Text>
       <Text style={styles.valor}>Valor: {formatarBRL(item.valor)}</Text>
       <Text style={styles.descricao}>{item.descricao}</Text>
