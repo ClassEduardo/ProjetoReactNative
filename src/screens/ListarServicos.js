@@ -9,6 +9,7 @@ import { listarServicos, atualizarServico, excluirServico } from '../services/Se
 import { atualizarTipoEmServicosFeitos } from '../services/ServicosFeitosDB';
 import { useFocusEffect } from '@react-navigation/native';
 
+
 export default function ListarServicos() {
   const [servicos, setServicos] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);

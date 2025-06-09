@@ -8,6 +8,10 @@ import SaveCancelButtons from '../components/SaveCancelButtons';
 import LabeledPicker from '../components/LabeledPicker';
 import { useFocusEffect } from '@react-navigation/native';
 import { listarServicosFeitos, atualizarServicoFeito, excluirServicoFeito, createTableServicosFeitos } from '../services/ServicosFeitosDB';
+import { Picker } from '@react-native-picker/picker';
+import { listarServicos } from '../services/ServicoBD';
+import { formatarData } from '../utils/format';
+
 
 export default function ListarServicosFeitos() {
   const [servicos, setServicos] = useState([]);
@@ -67,6 +71,10 @@ export default function ListarServicosFeitos() {
     const { id, tipo_servico, nome_cliente, valor, descricao, data_servico } = editFields;
     if (!tipo_servico.trim() || !nome_cliente.trim() || !valor.trim() || !data_servico.trim()) {
       Alert.alert('Atenção', 'Preencha todos os campos obrigatórios!');
+      return;
+    }
+    if (!/^\d{2}\/\d{2}/.test(data_servico.trim())) {
+      Alert.alert('Atenção', 'Informe a data com dia e mês (DD/MM)');
       return;
     }
     atualizarServicoFeito(id, tipo_servico, nome_cliente, valor, descricao, data_servico, (ok) => {
