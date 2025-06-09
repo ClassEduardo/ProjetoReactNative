@@ -1,7 +1,14 @@
-import { View, StyleSheet } from 'react-native';
+import { KeyboardAvoidingView, StyleSheet, Platform } from 'react-native';
 
 export default function ScreenContainer({ children, style }) {
-  return <View style={[styles.container, style]}>{children}</View>;
+    return (
+    <KeyboardAvoidingView
+      style={[styles.container, style]}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+    >
+      {children}
+    </KeyboardAvoidingView>
+  );
 }
 
 const styles = StyleSheet.create({
