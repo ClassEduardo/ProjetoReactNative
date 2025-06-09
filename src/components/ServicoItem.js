@@ -8,12 +8,12 @@ export default function ServicoItem({ nome, descricao, onEdit, onDelete }) {
       <View style={styles.botoes}>
         {onEdit && (
           <TouchableOpacity style={styles.botaoEditar} onPress={onEdit}>
-            <Text style={{ color: '#007bff' }}>Editar</Text>
+            <Text style={{ color: '#007bff', fontSize: 18 }}>Editar</Text>
           </TouchableOpacity>
         )}
         {onDelete && (
           <TouchableOpacity style={styles.botaoExcluir} onPress={onDelete}>
-            <Text style={{ color: '#d00' }}>Excluir</Text>
+            <Text style={{ color: '#d00', fontSize: 18 }}>Excluir</Text>
           </TouchableOpacity>
         )}
       </View>
@@ -30,10 +30,11 @@ const styles = StyleSheet.create({
   },
   nome: {
     fontWeight: 'bold',
-    fontSize: 16,
+    fontSize: 18,
   },
   descricao: {
     marginBottom: 8,
+    fontSize: 14,
   },
   botoes: {
     flexDirection: 'row',

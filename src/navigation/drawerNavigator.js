@@ -12,7 +12,7 @@ const Drawer = createDrawerNavigator();
 export default function DrawerNavigator() {
   return (
     <NavigationContainer>
-      <Drawer.Navigator initialRouteName="ListarServicosFeitos">
+      <Drawer.Navigator initialRouteName="RelatorioServicos">
         <Drawer.Screen
           name="RelatorioServicos"
           component={RelatorioServicos}

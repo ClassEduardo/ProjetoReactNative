@@ -1,10 +1,13 @@
-import React, { useState, useCallback  } from 'react';
-import { View, Text, Button, StyleSheet, Alert, ToastAndroid } from 'react-native';
+import React, { useState, useCallback } from 'react';
+import { Button, StyleSheet, Alert, ToastAndroid } from 'react-native';
+import { Picker } from '@react-native-picker/picker';
 import ScreenContainer from '../components/ScreenContainer';
-import LabeledInput from '../components/LabeledInput';import { Picker } from '@react-native-picker/picker';
+import LabeledInput from '../components/LabeledInput';
+import LabeledPicker from '../components/LabeledPicker';
 import { listarServicos } from '../services/ServicoBD';
 import { inserirServicoFeito } from '../services/ServicosFeitosDB';
 import { useFocusEffect } from '@react-navigation/native';
+import { formatarData } from '../utils/format';
 
 export default function RegistrarServico() {
   const [servicos, setServicos] = useState([]);
@@ -16,28 +19,21 @@ export default function RegistrarServico() {
 
   useFocusEffect(
     useCallback(() => {
-      listarServicos((lista) => setServicos(lista));
+      listarServicos((lista) => {
+        if (Array.isArray(lista)) setServicos(lista);
+        else setServicos([]);
+      });
     }, [])
   );
-
-
-  const formatarData = (texto) => {
-    const somenteNumeros = texto.replace(/[^0-9]/g, '').slice(0, 8);
-    if (somenteNumeros.length >= 5) {
-      return somenteNumeros.replace(
-        /(\d{2})(\d{2})(\d{0,4}).*/,
-        '$1/$2/$3'
-      );
-    }
-    if (somenteNumeros.length >= 3) {
-      return somenteNumeros.replace(/(\d{2})(\d{0,2})/, '$1/$2');
-    }
-    return somenteNumeros;
-  };
 
   const salvarServico = () => {
     if (!tipoServico || !valor.trim() || !data.trim()) {
       Alert.alert('Atenção', 'Preencha todos os campos obrigatórios!\nTipo de serviço, Valor do serviço e Data do serviço');
+      return;
+    }
+
+    if (!/^\d{2}\/\d{2}/.test(data.trim())) {
+      Alert.alert('Atenção', 'Informe a data com dia e mês (DD/MM)');
       return;
     }
 
@@ -55,19 +51,18 @@ export default function RegistrarServico() {
     });
   };
 
-  return (    <ScreenContainer style={styles.container}>
-      <Text style={styles.label}>Tipo de serviço</Text>
-      <View style={styles.pickerContainer}>
-        <Picker
-          selectedValue={tipoServico}
-          onValueChange={(itemValue) => setTipoServico(itemValue)}
-        >
-          <Picker.Item label='Selecione um serviço' value="" />
-          {servicos.map(s => (
-            <Picker.Item key={s.id} label={s.nome} value={s.nome} />
-          ))}
-        </Picker>
-      </View>
+  return (
+    <ScreenContainer style={styles.container}>
+      <LabeledPicker
+        label="Tipo de serviço"
+        selectedValue={tipoServico}
+        onValueChange={(itemValue) => setTipoServico(itemValue)}
+      >
+        <Picker.Item label="Selecione um serviço" value="" />
+        {servicos.map((s) => (
+          <Picker.Item key={s.id} label={s.nome} value={s.nome} />
+        ))}
+      </LabeledPicker>
       <LabeledInput
         label="Nome do cliente"
         inputProps={{
@@ -123,19 +118,6 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 24,
     backgroundColor: "#fff",
-  },
-  label: {
-    fontWeight: "bold",
-    marginBottom: 8,
-    marginTop: 16,
-    fontSize: 16,
-  },
-  pickerContainer: {
-    borderColor: "#bbb",
-    borderWidth: 1,
-    borderRadius: 6,
-    marginBottom: 8,
-    backgroundColor: "#f9f9f9",
   },
   input: {
     borderColor: "#bbb",
