@@ -1,14 +1,20 @@
-import { useCallback, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { Text, StyleSheet, SectionList, Alert } from 'react-native';
 import ScreenContainer from '../components/ScreenContainer';
 import LabeledInput from '../components/LabeledInput';
 import CenteredModal from '../components/CenteredModal';
 import ServicoFeitoItem from '../components/ServicoFeitoItem';
 import SaveCancelButtons from '../components/SaveCancelButtons';
+import LabeledPicker from '../components/LabeledPicker';
 import { useFocusEffect } from '@react-navigation/native';
-import { listarServicosFeitos, atualizarServicoFeito } from '../services/ServicosFeitosDB';
+import { listarServicosFeitos, atualizarServicoFeito, excluirServicoFeito, createTableServicosFeitos } from '../services/ServicosFeitosDB';
+import { Picker } from '@react-native-picker/picker';
+import { listarServicos } from '../services/ServicoBD';
+import { formatarData } from '../utils/format';
+
 
 export default function ListarServicosFeitos() {
+  const [servicos, setServicos] = useState([]);
   const [servicosFeitos, setServicosFeitos] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [servicoEditando, setServicoEditando] = useState(null);
@@ -20,24 +26,37 @@ export default function ListarServicosFeitos() {
     data_servico: ''
   });
 
-   useFocusEffect(
+  useFocusEffect(
     useCallback(() => {
       carregarServicos();
+      listarServicos((lista) => {
+        if (Array.isArray(lista)) setServicos(lista);
+        else setServicos([]);
+      });
     }, [])
   );
 
   async function carregarServicos() {
     await listarServicosFeitos((lista = []) => {
       if (!Array.isArray(lista)) lista = [];
+
+      const parse = (d) => {
+        const [dia, mes, ano] = (d || '').split('/').map(Number);
+        return new Date(ano || 0, (mes || 1) - 1, dia || 1).getTime();
+      };
+      lista.sort((a, b) => parse(b.data_servico) - parse(a.data_servico));
+
       const secoes = [];
       const agrupado = {};
       lista.forEach((item) => {
         if (!agrupado[item.data_servico]) agrupado[item.data_servico] = [];
         agrupado[item.data_servico].push(item);
       });
-      Object.keys(agrupado).forEach(data => {
-        secoes.push({ title: data, data: agrupado[data]});
-      });
+      Object.keys(agrupado)
+        .sort((a, b) => parse(b) - parse(a))
+        .forEach((data) => {
+          secoes.push({ title: data, data: agrupado[data] });
+        });
       setServicosFeitos(secoes);
     });
   }
@@ -54,6 +73,10 @@ export default function ListarServicosFeitos() {
       Alert.alert('Atenção', 'Preencha todos os campos obrigatórios!');
       return;
     }
+    if (!/^\d{2}\/\d{2}/.test(data_servico.trim())) {
+      Alert.alert('Atenção', 'Informe a data com dia e mês (DD/MM)');
+      return;
+    }
     atualizarServicoFeito(id, tipo_servico, nome_cliente, valor, descricao, data_servico, (ok) => {
       if (ok) {
         setModalVisible(false);
@@ -62,29 +85,6 @@ export default function ListarServicosFeitos() {
         Alert.alert('Erro ao atualizar!');
       }
     });
-  }
-
-  function confirmarExcluir(id) {
-    Alert.alert(
-      'Confirmar exclus\u00e3o',
-      'Deseja realmente excluir este servi\u00e7o?',
-      [
-        { text: 'Cancelar', style: 'cancel' },
-        {
-          text: 'Excluir',
-          style: 'destructive',
-          onPress: () => {
-            excluirServicoFeito(id, (ok) => {
-              if (ok) {
-                carregarServicos();
-              } else {
-                Alert.alert('Erro ao excluir!');
-              }
-            });
-          },
-        },
-      ]
-    );
   }
 
   return (
@@ -105,13 +105,16 @@ export default function ListarServicosFeitos() {
         ListEmptyComponent={<Text style={{ textAlign: 'center', marginTop: 32 }}>Nenhum serviço registrado.</Text>}
       />
       <CenteredModal visible={modalVisible} onRequestClose={() => setModalVisible(false)}>
-        <LabeledInput
+        <LabeledPicker
           label="Tipo de serviço"
-          inputProps={{
-            value: editFields.tipo_servico,
-            onChangeText: txt => setEditFields(f => ({ ...f, tipo_servico: txt })),
-          }}
-        />
+          selectedValue={editFields.tipo_servico}
+          onValueChange={txt => setEditFields(f => ({ ...f, tipo_servico: txt }))}
+        >
+          <Picker.Item label="Selecione um serviço" value="" />
+          {servicos.map((s) => (
+            <Picker.Item key={s.id} label={s.nome} value={s.nome} />
+          ))}
+        </LabeledPicker>
         <LabeledInput
           label="Nome do cliente"
           inputProps={{
@@ -141,9 +144,11 @@ export default function ListarServicosFeitos() {
           label="Data"
           inputProps={{
             value: editFields.data_servico,
-            onChangeText: txt => setEditFields(f => ({ ...f, data_servico: txt })),
+            onChangeText: txt =>
+              setEditFields(f => ({ ...f, data_servico: formatarData(txt) })),
           }}
         />
+
         <SaveCancelButtons
           onSave={salvarEdicao}
           onCancel={() => setModalVisible(false)}
@@ -153,7 +158,7 @@ export default function ListarServicosFeitos() {
   );
 }
 
-const styles =  StyleSheet.create({
+const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 24,

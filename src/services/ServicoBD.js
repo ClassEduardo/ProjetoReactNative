@@ -52,3 +52,16 @@ export async function atualizarServico(id, nome, descricao, callback) {
     callback(false);
   }
 }
+
+export async function excluirServico(id, callback) {
+  try {
+    await db.runAsync(
+      'DELETE FROM servicos WHERE id = ?;',
+      id
+    );
+    callback(true);
+  } catch (error) {
+    console.log('Erro ao excluir serviço:', error);
+    callback(false);
+  }
+}

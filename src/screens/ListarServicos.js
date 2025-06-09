@@ -1,11 +1,13 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, StyleSheet, Button, Alert, ToastAndroid } from 'react-native';
+import React, { useCallback, useState } from 'react';
+import { Text, FlatList, StyleSheet, Button, Alert, ToastAndroid } from 'react-native';
 import SaveCancelButtons from '../components/SaveCancelButtons';
 import ScreenContainer from '../components/ScreenContainer';
 import LabeledInput from '../components/LabeledInput';
 import CenteredModal from '../components/CenteredModal';
 import ServicoItem from '../components/ServicoItem';
-import { listarServicos, atualizarServico } from '../services/ServicoBD';
+import { listarServicos, atualizarServico, excluirServico } from '../services/ServicoBD';
+import { atualizarTipoEmServicosFeitos } from '../services/ServicosFeitosDB';
+import { useFocusEffect } from '@react-navigation/native';
 
 export default function ListarServicos() {
   const [servicos, setServicos] = useState([]);
@@ -18,9 +20,11 @@ export default function ListarServicos() {
     listarServicos((lista) => setServicos(lista));
   }
 
-  useEffect(() => {
-    buscarServicos();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      buscarServicos();
+    }, [])
+  );
 
   const abrirModalEdicao = (servico) => {
     setServicoEditando(servico);
@@ -36,13 +40,40 @@ export default function ListarServicos() {
     }
     atualizarServico(servicoEditando.id, nomeEdit, descricaoEdit, (ok) => {
       if (ok) {
+        atualizarTipoEmServicosFeitos(
+          servicoEditando.nome,
+          nomeEdit,
+          () => buscarServicos()
+        );
         ToastAndroid.show('Serviço atualizado!', ToastAndroid.SHORT)
         setModalVisible(false);
-        buscarServicos();
       } else {
         Alert.alert('Erro ao atualizar o serviço!');
       }
     });
+  };
+
+  const confirmarExcluir = (id) => {
+    Alert.alert(
+      'Confirmar exclusão',
+      'Deseja realmente excluir este serviço?',
+      [
+        { text: 'Cancelar', style: 'cancel' },
+        {
+          text: 'Excluir',
+          style: 'destructive',
+          onPress: () => {
+            excluirServico(id, (ok) => {
+              if (ok) {
+                buscarServicos();
+              } else {
+                Alert.alert('Erro ao excluir!');
+              }
+            });
+          },
+        },
+      ]
+    );
   };
 
   const renderItem = ({ item }) => (
@@ -50,6 +81,7 @@ export default function ListarServicos() {
       nome={item.nome}
       descricao={item.descricao}
       onEdit={() => abrirModalEdicao(item)}
+      onDelete={() => confirmarExcluir(item.id)}
     />
   );
 
