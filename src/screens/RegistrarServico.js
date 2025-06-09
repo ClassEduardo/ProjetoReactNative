@@ -6,6 +6,7 @@ import { inserirServicoFeito } from '../services/ServicosFeitosDB';
 import { formatarData } from '../utils/format';
 
 export default function RegistrarServico() {
+  const [servico, setServico] = useState('');
   const [nomeCliente, setNomeCliente] = useState('');
   const [valor, setValor] = useState('');
   const [descricao, setDescricao] = useState('');
