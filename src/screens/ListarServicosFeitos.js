@@ -6,7 +6,7 @@ import CenteredModal from '../components/CenteredModal';
 import ServicoFeitoItem from '../components/ServicoFeitoItem';
 import SaveCancelButtons from '../components/SaveCancelButtons';
 import { useFocusEffect } from '@react-navigation/native';
-import { listarServicosFeitos, atualizarServicoFeito } from '../services/ServicosFeitosDB';
+import { listarServicosFeitos, atualizarServicoFeito, excluirServicoFeito } from '../services/ServicosFeitosDB';
 
 export default function ListarServicosFeitos() {
   const [servicosFeitos, setServicosFeitos] = useState([]);

@@ -65,6 +65,7 @@ const styles = StyleSheet.create({
   },
   item: {
     marginBottom: 4,
+    fontSize: 16,
   },
   msg: {
     marginTop: 32,

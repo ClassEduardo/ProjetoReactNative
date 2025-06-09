@@ -1,7 +1,7 @@
-import React, { useState, useCallback  } from 'react';
+import React, { useState, useCallback } from 'react';
 import { View, Text, Button, StyleSheet, Alert, ToastAndroid } from 'react-native';
 import ScreenContainer from '../components/ScreenContainer';
-import LabeledInput from '../components/LabeledInput';import { Picker } from '@react-native-picker/picker';
+import LabeledInput from '../components/LabeledInput'; import { Picker } from '@react-native-picker/picker';
 import { listarServicos } from '../services/ServicoBD';
 import { inserirServicoFeito } from '../services/ServicosFeitosDB';
 import { useFocusEffect } from '@react-navigation/native';
@@ -19,7 +19,6 @@ export default function RegistrarServico() {
       listarServicos((lista) => setServicos(lista));
     }, [])
   );
-
 
   const formatarData = (texto) => {
     const somenteNumeros = texto.replace(/[^0-9]/g, '').slice(0, 8);
@@ -41,6 +40,11 @@ export default function RegistrarServico() {
       return;
     }
 
+    if (!/^\d{2}\/\d{2}/.test(data.trim())) {
+      Alert.alert('Atenção', 'Informe a data com dia e mês (DD/MM)');
+      return;
+    }
+
     inserirServicoFeito(tipoServico, nomeCliente, valor, descricao, data, (ok) => {
       if (ok) {
         ToastAndroid.show('Serviço registrado com sucesso!', ToastAndroid.SHORT);
@@ -55,8 +59,8 @@ export default function RegistrarServico() {
     });
   };
 
-  return (    
-  <ScreenContainer style={styles.container}>
+  return (
+    <ScreenContainer style={styles.container}>
       <Text style={styles.label}>Tipo de serviço</Text>
       <View style={styles.pickerContainer}>
         <Picker

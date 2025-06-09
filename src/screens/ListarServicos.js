@@ -1,11 +1,12 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, StyleSheet, Button, Alert, ToastAndroid } from 'react-native';
+import React, { useCallback, useState } from 'react';
+import { Text, FlatList, StyleSheet, Button, Alert, ToastAndroid } from 'react-native';
 import SaveCancelButtons from '../components/SaveCancelButtons';
 import ScreenContainer from '../components/ScreenContainer';
 import LabeledInput from '../components/LabeledInput';
 import CenteredModal from '../components/CenteredModal';
 import ServicoItem from '../components/ServicoItem';
 import { listarServicos, atualizarServico, excluirServico } from '../services/ServicoBD';
+import { useFocusEffect } from '@react-navigation/native';
 
 export default function ListarServicos() {
   const [servicos, setServicos] = useState([]);
@@ -18,9 +19,11 @@ export default function ListarServicos() {
     listarServicos((lista) => setServicos(lista));
   }
 
-  useEffect(() => {
-    buscarServicos();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      buscarServicos();
+    }, [])
+  );
 
   const abrirModalEdicao = (servico) => {
     setServicoEditando(servico);
