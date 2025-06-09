@@ -5,6 +5,7 @@ import LabeledInput from '../components/LabeledInput'; import { Picker } from '@
 import { listarServicos } from '../services/ServicoBD';
 import { inserirServicoFeito } from '../services/ServicosFeitosDB';
 import { useFocusEffect } from '@react-navigation/native';
+import { formatarData } from '../utils/format';
 
 export default function RegistrarServico() {
   const [servicos, setServicos] = useState([]);
@@ -19,20 +20,6 @@ export default function RegistrarServico() {
       listarServicos((lista) => setServicos(lista));
     }, [])
   );
-
-  const formatarData = (texto) => {
-    const somenteNumeros = texto.replace(/[^0-9]/g, '').slice(0, 8);
-    if (somenteNumeros.length >= 5) {
-      return somenteNumeros.replace(
-        /(\d{2})(\d{2})(\d{0,4}).*/,
-        '$1/$2/$3'
-      );
-    }
-    if (somenteNumeros.length >= 3) {
-      return somenteNumeros.replace(/(\d{2})(\d{0,2})/, '$1/$2');
-    }
-    return somenteNumeros;
-  };
 
   const salvarServico = () => {
     if (!tipoServico || !valor.trim() || !data.trim()) {

@@ -7,6 +7,7 @@ import ServicoFeitoItem from '../components/ServicoFeitoItem';
 import SaveCancelButtons from '../components/SaveCancelButtons';
 import { useFocusEffect } from '@react-navigation/native';
 import { listarServicosFeitos, atualizarServicoFeito, excluirServicoFeito } from '../services/ServicosFeitosDB';
+import { formatarData } from '../utils/format';
 
 export default function ListarServicosFeitos() {
   const [servicosFeitos, setServicosFeitos] = useState([]);
@@ -20,7 +21,7 @@ export default function ListarServicosFeitos() {
     data_servico: ''
   });
 
-   useFocusEffect(
+  useFocusEffect(
     useCallback(() => {
       carregarServicos();
     }, [])
@@ -29,15 +30,24 @@ export default function ListarServicosFeitos() {
   async function carregarServicos() {
     await listarServicosFeitos((lista = []) => {
       if (!Array.isArray(lista)) lista = [];
+
+      const parse = (d) => {
+        const [dia, mes, ano] = (d || '').split('/').map(Number);
+        return new Date(ano || 0, (mes || 1) - 1, dia || 1).getTime();
+      };
+      lista.sort((a, b) => parse(b.data_servico) - parse(a.data_servico));
+
       const secoes = [];
       const agrupado = {};
       lista.forEach((item) => {
         if (!agrupado[item.data_servico]) agrupado[item.data_servico] = [];
         agrupado[item.data_servico].push(item);
       });
-      Object.keys(agrupado).forEach(data => {
-        secoes.push({ title: data, data: agrupado[data]});
-      });
+      Object.keys(agrupado)
+        .sort((a, b) => parse(b) - parse(a))
+        .forEach((data) => {
+          secoes.push({ title: data, data: agrupado[data] });
+        });
       setServicosFeitos(secoes);
     });
   }
@@ -141,7 +151,8 @@ export default function ListarServicosFeitos() {
           label="Data"
           inputProps={{
             value: editFields.data_servico,
-            onChangeText: txt => setEditFields(f => ({ ...f, data_servico: txt })),
+            onChangeText: txt =>
+              setEditFields(f => ({ ...f, data_servico: formatarData(txt) })),
           }}
         />
         <SaveCancelButtons
@@ -153,7 +164,7 @@ export default function ListarServicosFeitos() {
   );
 }
 
-const styles =  StyleSheet.create({
+const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 24,

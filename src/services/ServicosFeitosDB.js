@@ -83,6 +83,20 @@ export async function excluirServicoFeito(id, callback) {
   }
 }
 
+export async function atualizarTipoEmServicosFeitos(antigoNome, novoNome, callback) {
+  try {
+    await db.runAsync(
+      'UPDATE servicos_feitos SET tipo_servico = ? WHERE tipo_servico = ?;',
+      novoNome,
+      antigoNome
+    );
+    callback(true);
+  } catch (err) {
+    console.log('Erro ao propagar nome de serviço:', err);
+    callback(false);
+  }
+}
+
 export async function obterEstatisticasServicos() {
   try {
     const totalRes = await db.getAllAsync(

@@ -6,6 +6,7 @@ import LabeledInput from '../components/LabeledInput';
 import CenteredModal from '../components/CenteredModal';
 import ServicoItem from '../components/ServicoItem';
 import { listarServicos, atualizarServico, excluirServico } from '../services/ServicoBD';
+import { atualizarTipoEmServicosFeitos } from '../services/ServicosFeitosDB';
 import { useFocusEffect } from '@react-navigation/native';
 
 export default function ListarServicos() {
@@ -39,9 +40,13 @@ export default function ListarServicos() {
     }
     atualizarServico(servicoEditando.id, nomeEdit, descricaoEdit, (ok) => {
       if (ok) {
+        atualizarTipoEmServicosFeitos(
+          servicoEditando.nome,
+          nomeEdit,
+          () => buscarServicos()
+        );
         ToastAndroid.show('Serviço atualizado!', ToastAndroid.SHORT)
         setModalVisible(false);
-        buscarServicos();
       } else {
         Alert.alert('Erro ao atualizar o serviço!');
       }
