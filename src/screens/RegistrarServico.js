@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, StyleSheet, Alert, ToastAndroid, ScrollView } from 'react-native';
+import { Button, StyleSheet, Alert, ToastAndroid, ScrollView, Text } from 'react-native';
 import ScreenContainer from '../components/ScreenContainer';
 import MaskedInput from '../components/MaskedInput';
 import FormSection from '../components/FormSection';
@@ -94,7 +94,8 @@ export default function RegistrarServico() {
           <MaskedInput label="Forma de pagamento" value={form.forma_pagamento} onChangeText={setCampo('forma_pagamento')} />
         </FormSection>
         <Button title="Salvar serviço" onPress={salvar} />
-      </ScrollView>    </ScreenContainer>
+      </ScrollView>
+    </ScreenContainer>
   );
 }
 

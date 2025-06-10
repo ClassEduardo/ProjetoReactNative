@@ -4,10 +4,10 @@ import { formatarBRL } from '../utils/format';
 export default function ServicoFeitoItem({ item, onUpdate, onDelete }) {
   return (
     <View style={styles.servicoItem}>
-      <Text style={styles.tipo}>{item.servico}</Text>
-      <Text style={styles.cliente}>Cliente: {item.nome_cliente}</Text>
-      <Text style={styles.valor}>Valor: {formatarBRL(item.valor)}</Text>
-      <Text style={styles.descricao}>{item.descricao}</Text>
+      <Text style={styles.campo}>Cliente: {item.nome_cliente}</Text>
+      <Text style={styles.campo}>Data entrada: {formatarBRL(item.data_hora_entrada)}</Text>
+      <Text style={styles.campo}>Equipamento: {formatarBRL(item.equipamento)}</Text>
+      <Text style={styles.campo}>Valor: {formatarBRL(item.valor)}</Text>
       <View style={styles.botoes}>
         {onUpdate && (
           <TouchableOpacity style={styles.btnEditar} onPress={onUpdate}>
@@ -37,11 +37,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     marginBottom: 4,
   },
-  cliente: {
-    marginBottom: 2,
-    fontSize: 18,
-  },
-  valor: {
+  campo: {
     marginBottom: 2,
     fontSize: 18,
   },
