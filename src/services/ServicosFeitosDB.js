@@ -161,25 +161,18 @@ export async function obterEstatisticasServicos() {
     const total = totalRes[0]?.total || 0;
     const valorTotal = totalRes[0]?.valor_total || 0;
 
-    const top3 = await db.getAllAsync(
+    const top3Caro = await db.getAllAsync(
       `SELECT solucao, valor
          FROM servicos_feitos
          ORDER BY CAST(valor AS REAL) DESC
          LIMIT 3;`
     );
 
-    const caro = await db.getAllAsync(
-      `SELECT solucao, valor
-         FROM servicos_feitos
-         ORDER BY CAST(valor AS REAL) DESC
-         LIMIT 1;`
-    );
-
-    const barato = await db.getAllAsync(
+    const top3Baratos = await db.getAllAsync(
       `SELECT solucao, valor
          FROM servicos_feitos
          ORDER BY CAST(valor AS REAL) ASC
-         LIMIT 1;`
+         LIMIT 3;`
     );
 
     const mesesDados = await db.getAllAsync(
@@ -193,9 +186,8 @@ export async function obterEstatisticasServicos() {
     const qtdMeses = meses.size || 1;
 
     return {
-      top3,
-      maisCaro: caro[0] || { solucao: '', valor: 0 },
-      maisBarato: barato[0] || { solucao: '', valor: 0 },
+      top3Caro,
+      top3Baratos,
       totalServicos: total,
       montanteTotal: valorTotal || 0,
       mediaServicosMes: total / qtdMeses,

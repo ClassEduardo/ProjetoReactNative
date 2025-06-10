@@ -1,5 +1,5 @@
 export function formatarBRL(valor) {
-  const numero = Number(valor);
+  const numero = Number(String(valor).replace(/\./g, '').replace(',', '.'));
   if (isNaN(numero)) return valor;
   return numero.toLocaleString('pt-BR', {
     style: 'currency',
