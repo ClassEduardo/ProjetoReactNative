@@ -32,11 +32,10 @@ const styles = StyleSheet.create({
     padding: 12,
     elevation: 1,
   },
-  tipo: {
+  titulo: {
     fontWeight: 'bold',
-    fontSize: 15,
-    marginBottom: 4,
     fontSize: 18,
+    marginBottom: 4,
   },
   cliente: {
     marginBottom: 2,
@@ -44,10 +43,6 @@ const styles = StyleSheet.create({
   },
   valor: {
     marginBottom: 2,
-    fontSize: 18,
-  },
-  descricao: {
-    marginBottom: 8,
     fontSize: 18,
   },
   botoes: {

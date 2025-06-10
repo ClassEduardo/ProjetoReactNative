@@ -1,99 +1,100 @@
 import React, { useState } from 'react';
-import { Button, StyleSheet, Alert, ToastAndroid } from 'react-native';
+import { Button, StyleSheet, Alert, ToastAndroid, ScrollView } from 'react-native';
 import ScreenContainer from '../components/ScreenContainer';
-import LabeledInput from '../components/LabeledInput';
+import MaskedInput from '../components/MaskedInput';
+import FormSection from '../components/FormSection';
 import { inserirServicoFeito } from '../services/ServicosFeitosDB';
-import { formatarData } from '../utils/format';
+import { formatarCPF, formatarCelular, formatarDataHora, formatarValor } from '../utils/format';
+
+const vazio = {
+  numero_os: '',
+  nome_cliente: '',
+  cpf: '',
+  celular: '',
+  situacao: '',
+  data_hora_entrada: '',
+  data_hora_saida: '',
+  vendedor: '',
+  tecnico: '',
+  equipamento: '',
+  marca: '',
+  modelo: '',
+  n_serie: '',
+  condicoes: '',
+  defeito: '',
+  solucao: '',
+  valor: '',
+  forma_pagamento: '',
+};
 
 export default function RegistrarServico() {
-  const [servico, setServico] = useState('');
-  const [nomeCliente, setNomeCliente] = useState('');
-  const [valor, setValor] = useState('');
-  const [descricao, setDescricao] = useState('');
-  const [data, setData] = useState('');
+  const [form, setForm] = useState(vazio);
 
-  const salvarServico = () => {
-    if (!servico.trim() || !valor.trim() || !data.trim()) {
-      Alert.alert('Atenção', 'Preencha todos os campos obrigatórios!\nNome do serviço, Valor do serviço e Data do serviço');
+  const setCampo = campo => valor => setForm(f => ({ ...f, [campo]: valor }));
+
+  function validar() {
+    if (form.data_hora_entrada && !/^\d{2}\/\d{2}\/\d{4} - \d{2}:\d{2}$/.test(form.data_hora_entrada)) {
+      Alert.alert('Atenção', 'Data de entrada inválida');
+      return false;
     }
-
-    if (!/^\d{2}\/\d{2}/.test(data.trim())) {
-      Alert.alert('Atenção', 'Informe a data com dia e mês (DD/MM)');
-      return;
+    if (form.data_hora_saida && !/^\d{2}\/\d{2}\/\d{4} - \d{2}:\d{2}$/.test(form.data_hora_saida)) {
+      Alert.alert('Atenção', 'Data de saída inválida');
+      return false;
     }
+    if (form.cpf && !/^\d{3}\.\d{3}\.\d{3}-\d{2}$/.test(form.cpf)) {
+      Alert.alert('Atenção', 'CPF inválido');
+      return false;
+    }
+    if (form.celular && !/^\(\d{2}\)\d{5}-\d{4}$/.test(form.celular)) {
+      Alert.alert('Atenção', 'Celular inválido');
+      return false;
+    }
+    return true;
+  }
 
-    inserirServicoFeito(servico, nomeCliente, valor, descricao, data, (ok) => {
+  function salvar() {
+    if (!validar()) return;
+    inserirServicoFeito(form, ok => {
       if (ok) {
         ToastAndroid.show('Serviço registrado com sucesso!', ToastAndroid.SHORT);
-        setServico('');
-        setNomeCliente('');
-        setValor('');
-        setDescricao('');
-        setData('');
+        setForm(vazio);
       } else {
         Alert.alert('Erro ao registrar o serviço!');
       }
     });
-  };
+  }
 
   return (
     <ScreenContainer style={styles.container}>
-      <LabeledInput
-        label="Nome do serviço"
-        inputProps={{
-          placeholder: 'Ex: Troca de tela',
-          value: servico,
-          onChangeText: setServico,
-          style: styles.input,
-        }}
-      />
-      <LabeledInput
-        label="Nome do cliente"
-        inputProps={{
-          placeholder: 'Ex: João da Silva',
-          value: nomeCliente,
-          onChangeText: setNomeCliente,
-          style: styles.input,
-        }}
-      />
-
-      <LabeledInput
-        label="Valor do serviço"
-        inputProps={{
-          placeholder: 'Ex: 120',
-          value: valor,
-          onChangeText: setValor,
-          keyboardType: 'numeric',
-          style: styles.input,
-        }}
-      />
-
-      <LabeledInput
-        label="Descrição"
-        inputProps={{
-          placeholder: 'Ex: Troca de tela com peça original',
-          value: descricao,
-          onChangeText: setDescricao,
-          multiline: true,
-          numberOfLines: 3,
-          style: [styles.input, styles.textarea],
-        }}
-      />
-
-      <LabeledInput
-        label="Data do serviço"
-        inputProps={{
-          placeholder: 'Ex: 05/06/2025',
-          value: data,
-          onChangeText: (t) => setData(formatarData(t)),
-          keyboardType: 'numbers-and-punctuation',
-          maxLength: 10,
-          style: styles.input,
-        }}
-      />
-
-      <Button title='Salvar serviço' onPress={salvarServico} />
-    </ScreenContainer>
+      <ScrollView>
+        <FormSection title="Dados gerais">
+          <MaskedInput label="Número OS" value={form.numero_os} onChangeText={setCampo('numero_os')} />
+          <MaskedInput label="Cliente" value={form.nome_cliente} onChangeText={setCampo('nome_cliente')} />
+          <MaskedInput label="CPF" value={form.cpf} onChangeText={setCampo('cpf')} format={formatarCPF} keyboardType="numbers-and-punctuation" />
+          <MaskedInput label="Celular" value={form.celular} onChangeText={setCampo('celular')} format={formatarCelular} keyboardType="phone-pad" />
+          <MaskedInput label="Situação" value={form.situacao} onChangeText={setCampo('situacao')} />
+          <MaskedInput label="Data de entrada" value={form.data_hora_entrada} onChangeText={setCampo('data_hora_entrada')} format={formatarDataHora} keyboardType="numbers-and-punctuation" />
+          <MaskedInput label="Data de saída" value={form.data_hora_saida} onChangeText={setCampo('data_hora_saida')} format={formatarDataHora} keyboardType="numbers-and-punctuation" />
+        </FormSection>
+        <FormSection title="Responsável técnico">
+          <MaskedInput label="Vendedor" value={form.vendedor} onChangeText={setCampo('vendedor')} />
+          <MaskedInput label="Técnico" value={form.tecnico} onChangeText={setCampo('tecnico')} />
+        </FormSection>
+        <FormSection title="Dados do equipamento">
+          <MaskedInput label="Equipamento" value={form.equipamento} onChangeText={setCampo('equipamento')} />
+          <MaskedInput label="Marca" value={form.marca} onChangeText={setCampo('marca')} />
+          <MaskedInput label="Modelo" value={form.modelo} onChangeText={setCampo('modelo')} />
+          <MaskedInput label="Nº série" value={form.n_serie} onChangeText={setCampo('n_serie')} />
+          <MaskedInput label="Condições que entra" value={form.condicoes} onChangeText={setCampo('condicoes')} />
+          <MaskedInput label="Defeito" value={form.defeito} onChangeText={setCampo('defeito')} />
+          <MaskedInput label="Solução" value={form.solucao} onChangeText={setCampo('solucao')} />
+        </FormSection>
+        <FormSection title="Pagamento">
+          <MaskedInput label="Valor" value={form.valor} onChangeText={setCampo('valor')} format={formatarValor} keyboardType="numeric" />
+          <MaskedInput label="Forma de pagamento" value={form.forma_pagamento} onChangeText={setCampo('forma_pagamento')} />
+        </FormSection>
+        <Button title="Salvar serviço" onPress={salvar} />
+      </ScrollView>    </ScreenContainer>
   );
 }
 
