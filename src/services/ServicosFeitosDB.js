@@ -162,10 +162,9 @@ export async function obterEstatisticasServicos() {
     const valorTotal = totalRes[0]?.valor_total || 0;
 
     const top3 = await db.getAllAsync(
-      `SELECT solucao, COUNT(*) as quantidade
+      `SELECT solucao, valor
          FROM servicos_feitos
-         GROUP BY solucao
-         ORDER BY quantidade DESC
+         ORDER BY CAST(valor AS REAL) DESC
          LIMIT 3;`
     );
 
