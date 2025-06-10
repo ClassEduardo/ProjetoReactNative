@@ -67,7 +67,8 @@ export default function RegistrarServico() {
           <MaskedInput label="Celular" value={form.celular} onChangeText={setCampo('celular')} format={formatarCelular} keyboardType="phone-pad" />
           <MaskedInput label="Situação" value={form.situacao} onChangeText={setCampo('situacao')} />
           <DateTimeInput label="Data de entrada" value={form.data_hora_entrada} onChange={setCampo('data_hora_entrada')} />
-          <DateTimeInput label="Data de saída" value={form.data_hora_saida} onChange={setCampo('data_hora_saida')} />        </FormSection>
+          <DateTimeInput label="Data de saída" value={form.data_hora_saida} onChange={setCampo('data_hora_saida') } />        
+        </FormSection>
         <FormSection title="Responsável técnico">
           <MaskedInput label="Vendedor" value={form.vendedor} onChangeText={setCampo('vendedor')} />
           <MaskedInput label="Técnico" value={form.tecnico} onChangeText={setCampo('tecnico')} />

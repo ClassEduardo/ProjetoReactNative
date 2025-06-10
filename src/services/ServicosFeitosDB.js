@@ -153,8 +153,6 @@ export async function excluirServicoFeito(id, callback) {
   }
 }
 
-// Retorna estatísticas dos serviços filtradas por mês/ano.
-// Se nenhum período for informado utiliza o mês atual.
 export async function obterEstatisticasServicos({ mes, ano } = {}) {
   try {
     const agora = new Date();
