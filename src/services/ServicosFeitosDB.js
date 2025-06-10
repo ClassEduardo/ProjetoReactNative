@@ -155,43 +155,44 @@ export async function excluirServicoFeito(id, callback) {
 
 export async function obterEstatisticasServicos() {
   try {
+    const agora = new Date();
+    const mes = String(agora.getMonth() + 1).padStart(2, '0');
+    const ano = String(agora.getFullYear());
+    const filtro = `__/${mes}/${ano}%`;
+
     const totalRes = await db.getAllAsync(
-      'SELECT COUNT(*) as total, SUM(CAST(valor AS REAL)) as valor_total FROM servicos_feitos;'
+      'SELECT COUNT(*) as total, SUM(CAST(valor AS REAL)) as valor_total FROM servicos_feitos WHERE data_hora_entrada LIKE ?;',
+      filtro
     );
+
     const total = totalRes[0]?.total || 0;
     const valorTotal = totalRes[0]?.valor_total || 0;
 
     const top3Caro = await db.getAllAsync(
       `SELECT solucao, valor
          FROM servicos_feitos
+         WHERE data_hora_entrada LIKE ?
          ORDER BY CAST(valor AS REAL) DESC
-         LIMIT 3;`
+         LIMIT 3;`,
+      filtro
     );
 
     const top3Baratos = await db.getAllAsync(
       `SELECT solucao, valor
          FROM servicos_feitos
+         WHERE data_hora_entrada LIKE ?
          ORDER BY CAST(valor AS REAL) ASC
-         LIMIT 3;`
+         LIMIT 3;`,
+      filtro
     );
-
-    const mesesDados = await db.getAllAsync(
-      'SELECT data_hora_entrada, valor FROM servicos_feitos;'
-    );
-    const meses = new Set();
-    mesesDados.forEach(r => {
-      const partes = (r.data_hora_entrada || '').split('/');
-      if (partes.length >= 3) meses.add(partes[1] + '/' + partes[2]);
-    });
-    const qtdMeses = meses.size || 1;
-
+    
     return {
       top3Caro,
       top3Baratos,
       totalServicos: total,
       montanteTotal: valorTotal || 0,
-      mediaServicosMes: total / qtdMeses,
-      mediaValorMes: (valorTotal || 0) / qtdMeses,
+      mediaServicosMes: total,
+      mediaValorMes: valorTotal || 0,
     };
   } catch (error) {
     console.log('Erro ao obter estatisticas:', error);
