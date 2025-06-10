@@ -53,3 +53,15 @@ export function formatarValor(texto) {
     maximumFractionDigits: 2,
   });
 }
+
+export function paraIsoLocal(data) {
+  const pad = n => String(n).padStart(2, '0');
+  return `${data.getFullYear()}-${pad(data.getMonth() + 1)}-${pad(data.getDate())} ${pad(data.getHours())}:${pad(data.getMinutes())}`;
+}
+
+export function formatarDataHoraExibicao(valor) {
+  if (!valor) return '';
+  const d = new Date(valor);
+  const pad = n => String(n).padStart(2, '0');
+  return `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()} - ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}

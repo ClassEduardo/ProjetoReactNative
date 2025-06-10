@@ -6,9 +6,10 @@ import CenteredModal from '../components/CenteredModal';
 import ServicoFeitoItem from '../components/ServicoFeitoItem';
 import SaveCancelButtons from '../components/SaveCancelButtons';
 import FiltrosHeader from '../components/FiltrosHeader';
+import DateTimeInput from '../components/DateTimeInput';
 import { useFocusEffect } from '@react-navigation/native';
 import { listarServicosFeitos, atualizarServicoFeito, excluirServicoFeito } from '../services/ServicosFeitosDB';
-import { formatarCPF, formatarCelular, formatarDataHora, formatarValor } from '../utils/format';
+import { formatarCPF, formatarCelular, formatarValor, formatarDataHoraExibicao } from '../utils/format';
 
 export default function ListarServicosFeitos() {
   const [servicosFeitos, setServicosFeitos] = useState([]);
@@ -30,10 +31,8 @@ export default function ListarServicosFeitos() {
     await listarServicosFeitos((lista = []) => {
       if (!Array.isArray(lista)) lista = [];
 
-      const parse = d => {
-        const [dia, mes, ano] = (d || '').split('/').map(Number);
-        return new Date(ano || 0, (mes || 1) - 1, dia || 1).getTime();
-      };
+      const parse = d => new Date(d || '').getTime();
+
       lista.sort((a, b) => parse(b.data_hora_entrada) - parse(a.data_hora_entrada));
 
       const secoes = [];
@@ -45,7 +44,7 @@ export default function ListarServicosFeitos() {
       Object.keys(agrupado)
         .sort((a, b) => parse(b) - parse(a))
         .forEach(data => {
-          secoes.push({ title: data, data: agrupado[data] });
+          secoes.push({ title: formatarDataHoraExibicao(data), data: agrupado[data] });
         });
       setServicosFeitos(secoes);
     });
@@ -62,18 +61,17 @@ export default function ListarServicosFeitos() {
             if (chave === 'valor') return false;
             return String(item[chave] || '').toLowerCase().includes(termo);
           });
+          const entradaStr = formatarDataHoraExibicao(item.data_hora_entrada);
+          const saidaStr = formatarDataHoraExibicao(item.data_hora_saida);
           return (
             (!cpfBusca || item.cpf.includes(cpfBusca)) &&
-            (!entradaBusca || item.data_hora_entrada.includes(entradaBusca)) &&
-            (!saidaBusca || item.data_hora_saida.includes(saidaBusca)) &&
+            (!entradaBusca || entradaStr.includes(entradaBusca)) &&
+            (!saidaBusca || saidaStr.includes(saidaBusca)) &&
             matchBusca
           );
         });
 
-        const parse = d => {
-          const [dia, mes, ano] = (d || '').split('/').map(Number);
-          return new Date(ano || 0, (mes || 1) - 1, dia || 1).getTime();
-        };
+        const parse = d => new Date(d || '').getTime();
 
         filtrado.sort((a, b) => parse(b.data_hora_entrada) - parse(a.data_hora_entrada));
 
@@ -86,7 +84,7 @@ export default function ListarServicosFeitos() {
         Object.keys(agrupado)
           .sort((a, b) => parse(b) - parse(a))
           .forEach(data => {
-            secoes.push({ title: data, data: agrupado[data] });
+            secoes.push({ title: formatarDataHoraExibicao(data), data: agrupado[data] });
           });
         setServicosFeitos(secoes);
       });
@@ -101,20 +99,6 @@ export default function ListarServicosFeitos() {
   }
 
   function salvarEdicao() {
-    if (
-      editFields.data_hora_entrada &&
-      !/^\d{2}\/\d{2}\/\d{4} - \d{2}:\d{2}$/.test(editFields.data_hora_entrada)
-    ) {
-      Alert.alert('Atenção', 'Data de entrada inválida');
-      return;
-    }
-    if (
-      editFields.data_hora_saida &&
-      !/^\d{2}\/\d{2}\/\d{4} - \d{2}:\d{2}$/.test(editFields.data_hora_saida)
-    ) {
-      Alert.alert('Atenção', 'Data de saída inválida');
-      return;
-    }
     atualizarServicoFeito(editFields, ok => {
       if (ok) {
         setModalVisible(false);
@@ -183,8 +167,8 @@ export default function ListarServicosFeitos() {
         <MaskedInput label="CPF" value={editFields.cpf} onChangeText={txt => setEditFields(f => ({ ...f, cpf: formatarCPF(txt) }))} />
         <MaskedInput label="Celular" value={editFields.celular} onChangeText={txt => setEditFields(f => ({ ...f, celular: formatarCelular(txt) }))} />
         <MaskedInput label="Situação" value={editFields.situacao} onChangeText={txt => setEditFields(f => ({ ...f, situacao: txt }))} />
-        <MaskedInput label="Data de entrada" value={editFields.data_hora_entrada} onChangeText={txt => setEditFields(f => ({ ...f, data_hora_entrada: formatarDataHora(txt) }))} />
-        <MaskedInput label="Data de saída" value={editFields.data_hora_saida} onChangeText={txt => setEditFields(f => ({ ...f, data_hora_saida: formatarDataHora(txt) }))} />
+        <DateTimeInput label="Data de entrada" value={editFields.data_hora_entrada} onChange={txt => setEditFields(f => ({ ...f, data_hora_entrada: txt }))} />
+        <DateTimeInput label="Data de saída" value={editFields.data_hora_saida} onChange={txt => setEditFields(f => ({ ...f, data_hora_saida: txt }))} />
         <MaskedInput label="Vendedor" value={editFields.vendedor} onChangeText={txt => setEditFields(f => ({ ...f, vendedor: txt }))} />
         <MaskedInput label="Técnico" value={editFields.tecnico} onChangeText={txt => setEditFields(f => ({ ...f, tecnico: txt }))} />
         <MaskedInput label="Equipamento" value={editFields.equipamento} onChangeText={txt => setEditFields(f => ({ ...f, equipamento: txt }))} />

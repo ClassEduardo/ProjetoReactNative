@@ -1,12 +1,12 @@
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { formatarBRL } from '../utils/format';
+import { formatarBRL, formatarDataHoraExibicao } from '../utils/format';
 
 export default function ServicoFeitoItem({ item, onUpdate, onDelete }) {
   return (
     <View style={styles.servicoItem}>
       <Text style={styles.campo}>Cliente: {item.nome_cliente}</Text>
-      <Text style={styles.campo}>Data entrada: {formatarBRL(item.data_hora_entrada)}</Text>
-      <Text style={styles.campo}>Equipamento: {formatarBRL(item.equipamento)}</Text>
+      <Text style={styles.campo}>Data entrada: {formatarDataHoraExibicao(item.data_hora_entrada)}</Text>
+      <Text style={styles.campo}>Equipamento: {item.equipamento}</Text>
       <Text style={styles.campo}>Valor: {formatarBRL(item.valor)}</Text>
       <View style={styles.botoes}>
         {onUpdate && (

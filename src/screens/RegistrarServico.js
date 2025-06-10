@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import { Button, StyleSheet, Alert, ToastAndroid, ScrollView, Text } from 'react-native';
 import ScreenContainer from '../components/ScreenContainer';
 import MaskedInput from '../components/MaskedInput';
+import DateTimeInput from '../components/DateTimeInput';
 import FormSection from '../components/FormSection';
 import { inserirServicoFeito } from '../services/ServicosFeitosDB';
-import { formatarCPF, formatarCelular, formatarDataHora, formatarValor } from '../utils/format';
+import { formatarCPF, formatarCelular, formatarValor } from '../utils/format';
 
 const vazio = {
   numero_os: '',
@@ -33,14 +34,6 @@ export default function RegistrarServico() {
   const setCampo = campo => valor => setForm(f => ({ ...f, [campo]: valor }));
 
   function validar() {
-    if (form.data_hora_entrada && !/^\d{2}\/\d{2}\/\d{4} - \d{2}:\d{2}$/.test(form.data_hora_entrada)) {
-      Alert.alert('Atenção', 'Data de entrada inválida');
-      return false;
-    }
-    if (form.data_hora_saida && !/^\d{2}\/\d{2}\/\d{4} - \d{2}:\d{2}$/.test(form.data_hora_saida)) {
-      Alert.alert('Atenção', 'Data de saída inválida');
-      return false;
-    }
     if (form.cpf && !/^\d{3}\.\d{3}\.\d{3}-\d{2}$/.test(form.cpf)) {
       Alert.alert('Atenção', 'CPF inválido');
       return false;
@@ -73,9 +66,8 @@ export default function RegistrarServico() {
           <MaskedInput label="CPF" value={form.cpf} onChangeText={setCampo('cpf')} format={formatarCPF} keyboardType="numbers-and-punctuation" />
           <MaskedInput label="Celular" value={form.celular} onChangeText={setCampo('celular')} format={formatarCelular} keyboardType="phone-pad" />
           <MaskedInput label="Situação" value={form.situacao} onChangeText={setCampo('situacao')} />
-          <MaskedInput label="Data de entrada" value={form.data_hora_entrada} onChangeText={setCampo('data_hora_entrada')} format={formatarDataHora} keyboardType="numbers-and-punctuation" />
-          <MaskedInput label="Data de saída" value={form.data_hora_saida} onChangeText={setCampo('data_hora_saida')} format={formatarDataHora} keyboardType="numbers-and-punctuation" />
-        </FormSection>
+          <DateTimeInput label="Data de entrada" value={form.data_hora_entrada} onChange={setCampo('data_hora_entrada')} />
+          <DateTimeInput label="Data de saída" value={form.data_hora_saida} onChange={setCampo('data_hora_saida')} />        </FormSection>
         <FormSection title="Responsável técnico">
           <MaskedInput label="Vendedor" value={form.vendedor} onChangeText={setCampo('vendedor')} />
           <MaskedInput label="Técnico" value={form.tecnico} onChangeText={setCampo('tecnico')} />
