@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import { Text, StyleSheet, SectionList, Alert } from 'react-native';
 import ScreenContainer from '../components/ScreenContainer';
 import MaskedInput from '../components/MaskedInput';
@@ -17,6 +17,8 @@ export default function ListarServicosFeitos() {
   const [cpfBusca, setCpfBusca] = useState('');
   const [entradaBusca, setEntradaBusca] = useState('');
   const [saidaBusca, setSaidaBusca] = useState('');
+  const [buscaGeral, setBuscaGeral] = useState('');
+
 
   useFocusEffect(
     useCallback(() => {
@@ -48,6 +50,50 @@ export default function ListarServicosFeitos() {
       setServicosFeitos(secoes);
     });
   }
+
+  useEffect(() => {
+    async function filtrar() {
+      await listarServicosFeitos((lista = []) => {
+        if (!Array.isArray(lista)) lista = [];
+
+        const filtrado = lista.filter(item => {
+          const termo = buscaGeral.toLowerCase();
+          const matchBusca = !buscaGeral || Object.keys(item).some(chave => {
+            if (chave === 'valor') return false;
+            return String(item[chave] || '').toLowerCase().includes(termo);
+          });
+          return (
+            (!cpfBusca || item.cpf.includes(cpfBusca)) &&
+            (!entradaBusca || item.data_hora_entrada.includes(entradaBusca)) &&
+            (!saidaBusca || item.data_hora_saida.includes(saidaBusca)) &&
+            matchBusca
+          );
+        });
+
+        const parse = d => {
+          const [dia, mes, ano] = (d || '').split('/').map(Number);
+          return new Date(ano || 0, (mes || 1) - 1, dia || 1).getTime();
+        };
+
+        filtrado.sort((a, b) => parse(b.data_hora_entrada) - parse(a.data_hora_entrada));
+
+        const secoes = [];
+        const agrupado = {};
+        filtrado.forEach(item => {
+          if (!agrupado[item.data_hora_entrada]) agrupado[item.data_hora_entrada] = [];
+          agrupado[item.data_hora_entrada].push(item);
+        });
+        Object.keys(agrupado)
+          .sort((a, b) => parse(b) - parse(a))
+          .forEach(data => {
+            secoes.push({ title: data, data: agrupado[data] });
+          });
+        setServicosFeitos(secoes);
+      });
+    }
+
+    filtrar();
+  }, [cpfBusca, entradaBusca, saidaBusca, buscaGeral]);
 
   function abrirModalEditar(servico) {
     setEditFields({ ...servico });
@@ -109,6 +155,8 @@ export default function ListarServicosFeitos() {
         keyExtractor={item => item.id.toString()}
         ListHeaderComponent={
           <FiltrosHeader
+            busca={buscaGeral}
+            setBusca={setBuscaGeral}
             cpf={cpfBusca}
             setCpf={setCpfBusca}
             entrada={entradaBusca}
@@ -130,7 +178,7 @@ export default function ListarServicosFeitos() {
         ListEmptyComponent={<Text style={{ textAlign: 'center', marginTop: 32 }}>Nenhum serviço registrado.</Text>}
       />
       <CenteredModal visible={modalVisible} onRequestClose={() => setModalVisible(false)}>
-         <MaskedInput label="Número OS" value={editFields.numero_os} onChangeText={txt => setEditFields(f => ({ ...f, numero_os: txt }))} />
+        <MaskedInput label="Número OS" value={editFields.numero_os} onChangeText={txt => setEditFields(f => ({ ...f, numero_os: txt }))} />
         <MaskedInput label="Cliente" value={editFields.nome_cliente} onChangeText={txt => setEditFields(f => ({ ...f, nome_cliente: txt }))} />
         <MaskedInput label="CPF" value={editFields.cpf} onChangeText={txt => setEditFields(f => ({ ...f, cpf: formatarCPF(txt) }))} />
         <MaskedInput label="Celular" value={editFields.celular} onChangeText={txt => setEditFields(f => ({ ...f, celular: formatarCelular(txt) }))} />
