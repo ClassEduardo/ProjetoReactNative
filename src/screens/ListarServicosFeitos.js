@@ -5,6 +5,7 @@ import MaskedInput from '../components/MaskedInput';
 import CenteredModal from '../components/CenteredModal';
 import ServicoFeitoItem from '../components/ServicoFeitoItem';
 import SaveCancelButtons from '../components/SaveCancelButtons';
+import FiltrosHeader from '../components/FiltrosHeader';
 import { useFocusEffect } from '@react-navigation/native';
 import { listarServicosFeitos, atualizarServicoFeito, excluirServicoFeito } from '../services/ServicosFeitosDB';
 import { formatarCPF, formatarCelular, formatarDataHora, formatarValor } from '../utils/format';
@@ -13,6 +14,9 @@ export default function ListarServicosFeitos() {
   const [servicosFeitos, setServicosFeitos] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [editFields, setEditFields] = useState({});
+  const [cpfBusca, setCpfBusca] = useState('');
+  const [entradaBusca, setEntradaBusca] = useState('');
+  const [saidaBusca, setSaidaBusca] = useState('');
 
   useFocusEffect(
     useCallback(() => {
@@ -103,6 +107,16 @@ export default function ListarServicosFeitos() {
       <SectionList
         sections={servicosFeitos}
         keyExtractor={item => item.id.toString()}
+        ListHeaderComponent={
+          <FiltrosHeader
+            cpf={cpfBusca}
+            setCpf={setCpfBusca}
+            entrada={entradaBusca}
+            setEntrada={setEntradaBusca}
+            saida={saidaBusca}
+            setSaida={setSaidaBusca}
+          />
+        }
         renderSectionHeader={({ section: { title } }) => (
           <Text style={styles.secao}>{title}</Text>
         )}
