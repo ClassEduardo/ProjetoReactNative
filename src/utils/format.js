@@ -9,17 +9,6 @@ export function formatarBRL(valor) {
   });
 }
 
-export function formatarData(texto) {
-  const somenteNumeros = texto.replace(/[^0-9]/g, '').slice(0, 8);
-  if (somenteNumeros.length >= 5) {
-    return somenteNumeros.replace(/(\d{2})(\d{2})(\d{0,4}).*/, '$1/$2/$3');
-  }
-  if (somenteNumeros.length >= 3) {
-    return somenteNumeros.replace(/(\d{2})(\d{0,2})/, '$1/$2');
-  }
-  return somenteNumeros;
-}
-
 export function formatarCPF(texto) {
   const nums = texto.replace(/\D/g, '').slice(0, 11);
   if (nums.length >= 10) return nums.replace(/(\d{3})(\d{3})(\d{3})(\d{0,2}).*/, '$1.$2.$3-$4');
