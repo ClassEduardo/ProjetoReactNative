@@ -153,18 +153,19 @@ export async function excluirServicoFeito(id, callback) {
   }
 }
 
-export async function obterEstatisticasServicos() {
+// Retorna estatísticas dos serviços filtradas por mês/ano.
+// Se nenhum período for informado utiliza o mês atual.
+export async function obterEstatisticasServicos({ mes, ano } = {}) {
   try {
     const agora = new Date();
-    const mes = String(agora.getMonth() + 1).padStart(2, '0');
-    const ano = String(agora.getFullYear());
-    const filtro = `__/${mes}/${ano}%`;
+    const mesRef = mes || String(agora.getMonth() + 1).padStart(2, '0');
+    const anoRef = ano || String(agora.getFullYear());
+    const filtro = `__/${mesRef}/${anoRef}%`;
 
     const totalRes = await db.getAllAsync(
       'SELECT COUNT(*) as total, SUM(CAST(valor AS REAL)) as valor_total FROM servicos_feitos WHERE data_hora_entrada LIKE ?;',
       filtro
     );
-
     const total = totalRes[0]?.total || 0;
     const valorTotal = totalRes[0]?.valor_total || 0;
 
@@ -185,7 +186,7 @@ export async function obterEstatisticasServicos() {
          LIMIT 3;`,
       filtro
     );
-    
+
     return {
       top3Caro,
       top3Baratos,
