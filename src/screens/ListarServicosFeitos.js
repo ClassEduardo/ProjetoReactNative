@@ -1,38 +1,29 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import { Text, StyleSheet, SectionList, Alert } from 'react-native';
 import ScreenContainer from '../components/ScreenContainer';
-import LabeledInput from '../components/LabeledInput';
+import MaskedInput from '../components/MaskedInput';
 import CenteredModal from '../components/CenteredModal';
 import ServicoFeitoItem from '../components/ServicoFeitoItem';
 import SaveCancelButtons from '../components/SaveCancelButtons';
-import LabeledPicker from '../components/LabeledPicker';
+import FiltrosHeader from '../components/FiltrosHeader';
+import DateTimeInput from '../components/DateTimeInput';
 import { useFocusEffect } from '@react-navigation/native';
-import { listarServicosFeitos, atualizarServicoFeito, excluirServicoFeito, createTableServicosFeitos } from '../services/ServicosFeitosDB';
-import { Picker } from '@react-native-picker/picker';
-import { listarServicos } from '../services/ServicoBD';
-import { formatarData } from '../utils/format';
-
+import { listarServicosFeitos, atualizarServicoFeito, excluirServicoFeito } from '../services/ServicosFeitosDB';
+import { formatarCPF, formatarCelular, formatarValor, formatarDataHoraExibicao } from '../utils/format';
 
 export default function ListarServicosFeitos() {
-  const [servicos, setServicos] = useState([]);
   const [servicosFeitos, setServicosFeitos] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
-  const [servicoEditando, setServicoEditando] = useState(null);
-  const [editFields, setEditFields] = useState({
-    tipo_servico: '',
-    nome_cliente: '',
-    valor: '',
-    descricao: '',
-    data_servico: ''
-  });
+  const [editFields, setEditFields] = useState({});
+  const [cpfBusca, setCpfBusca] = useState('');
+  const [entradaBusca, setEntradaBusca] = useState('');
+  const [saidaBusca, setSaidaBusca] = useState('');
+  const [buscaGeral, setBuscaGeral] = useState('');
+
 
   useFocusEffect(
     useCallback(() => {
       carregarServicos();
-      listarServicos((lista) => {
-        if (Array.isArray(lista)) setServicos(lista);
-        else setServicos([]);
-      });
     }, [])
   );
 
@@ -40,44 +31,75 @@ export default function ListarServicosFeitos() {
     await listarServicosFeitos((lista = []) => {
       if (!Array.isArray(lista)) lista = [];
 
-      const parse = (d) => {
-        const [dia, mes, ano] = (d || '').split('/').map(Number);
-        return new Date(ano || 0, (mes || 1) - 1, dia || 1).getTime();
-      };
-      lista.sort((a, b) => parse(b.data_servico) - parse(a.data_servico));
+      const parse = d => new Date(d || '').getTime();
+
+      lista.sort((a, b) => parse(b.data_hora_entrada) - parse(a.data_hora_entrada));
 
       const secoes = [];
       const agrupado = {};
-      lista.forEach((item) => {
-        if (!agrupado[item.data_servico]) agrupado[item.data_servico] = [];
-        agrupado[item.data_servico].push(item);
+      lista.forEach(item => {
+        if (!agrupado[item.data_hora_entrada]) agrupado[item.data_hora_entrada] = [];
+        agrupado[item.data_hora_entrada].push(item);
       });
       Object.keys(agrupado)
         .sort((a, b) => parse(b) - parse(a))
-        .forEach((data) => {
-          secoes.push({ title: data, data: agrupado[data] });
+        .forEach(data => {
+          secoes.push({ title: formatarDataHoraExibicao(data), data: agrupado[data] });
         });
       setServicosFeitos(secoes);
     });
   }
 
+  useEffect(() => {
+    async function filtrar() {
+      await listarServicosFeitos((lista = []) => {
+        if (!Array.isArray(lista)) lista = [];
+
+        const filtrado = lista.filter(item => {
+          const termo = buscaGeral.toLowerCase();
+          const matchBusca = !buscaGeral || Object.keys(item).some(chave => {
+            if (chave === 'valor') return false;
+            return String(item[chave] || '').toLowerCase().includes(termo);
+          });
+          const entradaStr = formatarDataHoraExibicao(item.data_hora_entrada);
+          const saidaStr = formatarDataHoraExibicao(item.data_hora_saida);
+          return (
+            (!cpfBusca || item.cpf.includes(cpfBusca)) &&
+            (!entradaBusca || entradaStr.includes(entradaBusca)) &&
+            (!saidaBusca || saidaStr.includes(saidaBusca)) &&
+            matchBusca
+          );
+        });
+
+        const parse = d => new Date(d || '').getTime();
+
+        filtrado.sort((a, b) => parse(b.data_hora_entrada) - parse(a.data_hora_entrada));
+
+        const secoes = [];
+        const agrupado = {};
+        filtrado.forEach(item => {
+          if (!agrupado[item.data_hora_entrada]) agrupado[item.data_hora_entrada] = [];
+          agrupado[item.data_hora_entrada].push(item);
+        });
+        Object.keys(agrupado)
+          .sort((a, b) => parse(b) - parse(a))
+          .forEach(data => {
+            secoes.push({ title: formatarDataHoraExibicao(data), data: agrupado[data] });
+          });
+        setServicosFeitos(secoes);
+      });
+    }
+
+    filtrar();
+  }, [cpfBusca, entradaBusca, saidaBusca, buscaGeral]);
+
   function abrirModalEditar(servico) {
-    setServicoEditando(servico);
     setEditFields({ ...servico });
     setModalVisible(true);
   }
 
   function salvarEdicao() {
-    const { id, tipo_servico, nome_cliente, valor, descricao, data_servico } = editFields;
-    if (!tipo_servico.trim() || !nome_cliente.trim() || !valor.trim() || !data_servico.trim()) {
-      Alert.alert('Atenção', 'Preencha todos os campos obrigatórios!');
-      return;
-    }
-    if (!/^\d{2}\/\d{2}/.test(data_servico.trim())) {
-      Alert.alert('Atenção', 'Informe a data com dia e mês (DD/MM)');
-      return;
-    }
-    atualizarServicoFeito(id, tipo_servico, nome_cliente, valor, descricao, data_servico, (ok) => {
+    atualizarServicoFeito(editFields, ok => {
       if (ok) {
         setModalVisible(false);
         carregarServicos();
@@ -87,11 +109,46 @@ export default function ListarServicosFeitos() {
     });
   }
 
+  function confirmarExcluir(id) {
+    Alert.alert(
+      'Confirmar exclusão',
+      'Deseja realmente excluir este serviço?',
+      [
+        { text: 'Cancelar', style: 'cancel' },
+        {
+          text: 'Excluir',
+          style: 'destructive',
+          onPress: () => {
+            excluirServicoFeito(id, (ok) => {
+              if (ok) {
+                carregarServicos();
+              } else {
+                Alert.alert('Erro ao excluir!');
+              }
+            });
+          },
+        },
+      ]
+    );
+  }
+
   return (
     <ScreenContainer style={styles.container}>
       <SectionList
         sections={servicosFeitos}
         keyExtractor={item => item.id.toString()}
+        ListHeaderComponent={
+          <FiltrosHeader
+            busca={buscaGeral}
+            setBusca={setBuscaGeral}
+            cpf={cpfBusca}
+            setCpf={setCpfBusca}
+            entrada={entradaBusca}
+            setEntrada={setEntradaBusca}
+            saida={saidaBusca}
+            setSaida={setSaidaBusca}
+          />
+        }
         renderSectionHeader={({ section: { title } }) => (
           <Text style={styles.secao}>{title}</Text>
         )}
@@ -105,54 +162,25 @@ export default function ListarServicosFeitos() {
         ListEmptyComponent={<Text style={{ textAlign: 'center', marginTop: 32 }}>Nenhum serviço registrado.</Text>}
       />
       <CenteredModal visible={modalVisible} onRequestClose={() => setModalVisible(false)}>
-        <LabeledPicker
-          label="Tipo de serviço"
-          selectedValue={editFields.tipo_servico}
-          onValueChange={txt => setEditFields(f => ({ ...f, tipo_servico: txt }))}
-        >
-          <Picker.Item label="Selecione um serviço" value="" />
-          {servicos.map((s) => (
-            <Picker.Item key={s.id} label={s.nome} value={s.nome} />
-          ))}
-        </LabeledPicker>
-        <LabeledInput
-          label="Nome do cliente"
-          inputProps={{
-            value: editFields.nome_cliente,
-            onChangeText: txt => setEditFields(f => ({ ...f, nome_cliente: txt })),
-          }}
-        />
-        <LabeledInput
-          label="Valor"
-          inputProps={{
-            value: editFields.valor,
-            onChangeText: txt => setEditFields(f => ({ ...f, valor: txt })),
-            keyboardType: 'numeric',
-          }}
-        />
-        <LabeledInput
-          label="Descrição"
-          inputProps={{
-            value: editFields.descricao,
-            onChangeText: txt => setEditFields(f => ({ ...f, descricao: txt })),
-            multiline: true,
-            numberOfLines: 3,
-            style: styles.textarea,
-          }}
-        />
-        <LabeledInput
-          label="Data"
-          inputProps={{
-            value: editFields.data_servico,
-            onChangeText: txt =>
-              setEditFields(f => ({ ...f, data_servico: formatarData(txt) })),
-          }}
-        />
-
-        <SaveCancelButtons
-          onSave={salvarEdicao}
-          onCancel={() => setModalVisible(false)}
-        />
+        <MaskedInput label="Número OS" value={editFields.numero_os} onChangeText={txt => setEditFields(f => ({ ...f, numero_os: txt }))} />
+        <MaskedInput label="Cliente" value={editFields.nome_cliente} onChangeText={txt => setEditFields(f => ({ ...f, nome_cliente: txt }))} />
+        <MaskedInput label="CPF" value={editFields.cpf} onChangeText={txt => setEditFields(f => ({ ...f, cpf: formatarCPF(txt) }))} />
+        <MaskedInput label="Celular" value={editFields.celular} onChangeText={txt => setEditFields(f => ({ ...f, celular: formatarCelular(txt) }))} />
+        <MaskedInput label="Situação" value={editFields.situacao} onChangeText={txt => setEditFields(f => ({ ...f, situacao: txt }))} />
+        <DateTimeInput label="Data de entrada" value={editFields.data_hora_entrada} onChange={txt => setEditFields(f => ({ ...f, data_hora_entrada: txt }))} />
+        <DateTimeInput label="Data de saída" value={editFields.data_hora_saida} onChange={txt => setEditFields(f => ({ ...f, data_hora_saida: txt }))} />
+        <MaskedInput label="Vendedor" value={editFields.vendedor} onChangeText={txt => setEditFields(f => ({ ...f, vendedor: txt }))} />
+        <MaskedInput label="Técnico" value={editFields.tecnico} onChangeText={txt => setEditFields(f => ({ ...f, tecnico: txt }))} />
+        <MaskedInput label="Equipamento" value={editFields.equipamento} onChangeText={txt => setEditFields(f => ({ ...f, equipamento: txt }))} />
+        <MaskedInput label="Marca" value={editFields.marca} onChangeText={txt => setEditFields(f => ({ ...f, marca: txt }))} />
+        <MaskedInput label="Modelo" value={editFields.modelo} onChangeText={txt => setEditFields(f => ({ ...f, modelo: txt }))} />
+        <MaskedInput label="Nº série" value={editFields.n_serie} onChangeText={txt => setEditFields(f => ({ ...f, n_serie: txt }))} />
+        <MaskedInput label="Condições" value={editFields.condicoes} onChangeText={txt => setEditFields(f => ({ ...f, condicoes: txt }))} />
+        <MaskedInput label="Defeito" value={editFields.defeito} onChangeText={txt => setEditFields(f => ({ ...f, defeito: txt }))} />
+        <MaskedInput label="Solução" value={editFields.solucao} onChangeText={txt => setEditFields(f => ({ ...f, solucao: txt }))} />
+        <MaskedInput label="Valor" value={editFields.valor} onChangeText={txt => setEditFields(f => ({ ...f, valor: formatarValor(txt) }))} keyboardType="numeric" />
+        <MaskedInput label="Forma" value={editFields.forma_pagamento} onChangeText={txt => setEditFields(f => ({ ...f, forma_pagamento: txt }))} />
+        <SaveCancelButtons onSave={salvarEdicao} onCancel={() => setModalVisible(false)} />
       </CenteredModal>
     </ScreenContainer>
   );

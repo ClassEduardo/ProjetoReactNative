@@ -7,11 +7,24 @@ export async function createTableServicosFeitos() {
     await db.execAsync(
       `CREATE TABLE IF NOT EXISTS servicos_feitos (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        tipo_servico TEXT,
+        numero_os TEXT,
         nome_cliente TEXT,
+        cpf TEXT,
+        celular TEXT,
+        situacao TEXT,
+        data_hora_entrada DATETIME,
+        data_hora_saida DATETIME,
+        vendedor TEXT,
+        tecnico TEXT,
+        equipamento TEXT,
+        marca TEXT,
+        modelo TEXT,
+        n_serie TEXT,
+        condicoes TEXT,
+        defeito TEXT,
+        solucao TEXT,
         valor TEXT,
-        descricao TEXT,
-        data_servico TEXT
+        forma_pagamento TEXT
       );`
     );
   } catch (error) {
@@ -19,17 +32,33 @@ export async function createTableServicosFeitos() {
   }
 }
 
-export async function inserirServicoFeito(tipoServico, nomeCliente, valor, descricao, data, callback) {
+export async function inserirServicoFeito(dados, callback) {
   try {
     await db.runAsync(
-      `INSERT INTO servicos_feitos 
-        (tipo_servico, nome_cliente, valor, descricao, data_servico)
-        VALUES (?, ?, ?, ?, ?);`,
-      tipoServico,
-      nomeCliente,
-      valor,
-      descricao,
-      data
+      `INSERT INTO servicos_feitos (
+        numero_os, nome_cliente, cpf, celular, situacao,
+        data_hora_entrada, data_hora_saida,
+        vendedor, tecnico, equipamento, marca, modelo, n_serie,
+        condicoes, defeito, solucao, valor, forma_pagamento
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`,
+      dados.numero_os,
+      dados.nome_cliente,
+      dados.cpf,
+      dados.celular,
+      dados.situacao,
+      dados.data_hora_entrada,
+      dados.data_hora_saida,
+      dados.vendedor,
+      dados.tecnico,
+      dados.equipamento,
+      dados.marca,
+      dados.modelo,
+      dados.n_serie,
+      dados.condicoes,
+      dados.defeito,
+      dados.solucao,
+      dados.valor,
+      dados.forma_pagamento
     );
     callback(true);
   } catch (error) {
@@ -38,17 +67,54 @@ export async function inserirServicoFeito(tipoServico, nomeCliente, valor, descr
   }
 }
 
-export async function atualizarServicoFeito(id, tipoServico, nomeCliente, valor, descricao, data, callback) {
+export async function atualizarServicoFeito(dados, callback) {
+  const {
+    id,
+    numero_os,
+    nome_cliente,
+    cpf,
+    celular,
+    situacao,
+    data_hora_entrada,
+    data_hora_saida,
+    vendedor,
+    tecnico,
+    equipamento,
+    marca,
+    modelo,
+    n_serie,
+    condicoes,
+    defeito,
+    solucao,
+    valor,
+    forma_pagamento,
+  } = dados;
   try {
     await db.runAsync(
-      `UPDATE servicos_feitos 
-        SET tipo_servico = ?, nome_cliente = ?, valor = ?, descricao = ?, data_servico = ?
+      `UPDATE servicos_feitos SET
+        numero_os = ?, nome_cliente = ?, cpf = ?, celular = ?, situacao = ?,
+        data_hora_entrada = ?, data_hora_saida = ?,
+        vendedor = ?, tecnico = ?, equipamento = ?, marca = ?, modelo = ?, n_serie = ?,
+        condicoes = ?, defeito = ?, solucao = ?, valor = ?, forma_pagamento = ?
         WHERE id = ?;`,
-      tipoServico,
-      nomeCliente,
+      numero_os,
+      nome_cliente,
+      cpf,
+      celular,
+      situacao,
+      data_hora_entrada,
+      data_hora_saida,
+      vendedor,
+      tecnico,
+      equipamento,
+      marca,
+      modelo,
+      n_serie,
+      condicoes,
+      defeito,
+      solucao,
       valor,
-      descricao,
-      data,
+      forma_pagamento,
       id
     );
     callback(true);
@@ -61,7 +127,11 @@ export async function atualizarServicoFeito(id, tipoServico, nomeCliente, valor,
 export async function listarServicosFeitos(callback) {
   try {
     const resultados = await db.getAllAsync(
-      'SELECT id, tipo_servico, nome_cliente, valor, descricao, data_servico FROM servicos_feitos;'
+      `SELECT id, numero_os, nome_cliente, cpf, celular, situacao,
+              data_hora_entrada, data_hora_saida, vendedor, tecnico,
+              equipamento, marca, modelo, n_serie, condicoes, defeito,
+              solucao, valor, forma_pagamento
+         FROM servicos_feitos;`
     );
     callback(resultados);
   } catch (error) {
@@ -83,68 +153,52 @@ export async function excluirServicoFeito(id, callback) {
   }
 }
 
-export async function atualizarTipoEmServicosFeitos(antigoNome, novoNome, callback) {
+export async function obterEstatisticasServicos({ mes, ano } = {}) {
   try {
-    await db.runAsync(
-      'UPDATE servicos_feitos SET tipo_servico = ? WHERE tipo_servico = ?;',
-      novoNome,
-      antigoNome
-    );
-    callback(true);
-  } catch (err) {
-    console.log('Erro ao propagar nome de serviço:', err);
-    callback(false);
-  }
-}
+    const agora = new Date();
+    const mesRef = mes || String(agora.getMonth() + 1).padStart(2, '0');
+    const anoRef = ano || String(agora.getFullYear());
 
-export async function obterEstatisticasServicos() {
-  try {
     const totalRes = await db.getAllAsync(
-      'SELECT COUNT(*) as total, SUM(CAST(valor AS REAL)) as valor_total FROM servicos_feitos;'
+      `SELECT COUNT(*) as total, SUM(CAST(valor AS REAL)) as valor_total
+         FROM servicos_feitos
+        WHERE strftime('%m', data_hora_entrada) = ?
+          AND strftime('%Y', data_hora_entrada) = ?;`,
+      mesRef,
+      anoRef
     );
     const total = totalRes[0]?.total || 0;
     const valorTotal = totalRes[0]?.valor_total || 0;
 
-    const top3 = await db.getAllAsync(
-      `SELECT tipo_servico, COUNT(*) as quantidade
+    const top3Caro = await db.getAllAsync(
+      `SELECT solucao, valor
          FROM servicos_feitos
-         GROUP BY tipo_servico
-         ORDER BY quantidade DESC
-         LIMIT 3;`
-    );
-
-    const caro = await db.getAllAsync(
-      `SELECT tipo_servico, valor
-         FROM servicos_feitos
+        WHERE strftime('%m', data_hora_entrada) = ?
+          AND strftime('%Y', data_hora_entrada) = ?
          ORDER BY CAST(valor AS REAL) DESC
-         LIMIT 1;`
+         LIMIT 3;`,
+      mesRef,
+      anoRef
     );
 
-    const barato = await db.getAllAsync(
-      `SELECT tipo_servico, valor
+    const top3Baratos = await db.getAllAsync(
+      `SELECT solucao, valor
          FROM servicos_feitos
+        WHERE strftime('%m', data_hora_entrada) = ?
+          AND strftime('%Y', data_hora_entrada) = ?
          ORDER BY CAST(valor AS REAL) ASC
-         LIMIT 1;`
+         LIMIT 3;`,
+      mesRef,
+      anoRef
     );
-
-    const mesesDados = await db.getAllAsync(
-      'SELECT data_servico, valor FROM servicos_feitos;'
-    );
-    const meses = new Set();
-    mesesDados.forEach(r => {
-      const partes = (r.data_servico || '').split('/');
-      if (partes.length === 3) meses.add(partes[1] + '/' + partes[2]);
-    });
-    const qtdMeses = meses.size || 1;
 
     return {
-      top3,
-      maisCaro: caro[0] || { tipo_servico: '', valor: 0 },
-      maisBarato: barato[0] || { tipo_servico: '', valor: 0 },
+      top3Caro,
+      top3Baratos,
       totalServicos: total,
       montanteTotal: valorTotal || 0,
-      mediaServicosMes: total / qtdMeses,
-      mediaValorMes: (valorTotal || 0) / qtdMeses,
+      mediaServicosMes: total,
+      mediaValorMes: valorTotal || 0,
     };
   } catch (error) {
     console.log('Erro ao obter estatisticas:', error);

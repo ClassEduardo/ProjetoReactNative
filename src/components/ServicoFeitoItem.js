@@ -1,13 +1,13 @@
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { formatarBRL } from '../utils/format';
+import { formatarBRL, formatarDataHoraExibicao } from '../utils/format';
 
 export default function ServicoFeitoItem({ item, onUpdate, onDelete }) {
   return (
     <View style={styles.servicoItem}>
-      <Text style={styles.tipo}>{item.tipo_servico}</Text>
-      <Text style={styles.cliente}>Cliente: {item.nome_cliente}</Text>
-      <Text style={styles.valor}>Valor: {formatarBRL(item.valor)}</Text>
-      <Text style={styles.descricao}>{item.descricao}</Text>
+      <Text style={styles.campo}>Cliente: {item.nome_cliente}</Text>
+      <Text style={styles.campo}>Data entrada: {formatarDataHoraExibicao(item.data_hora_entrada)}</Text>
+      <Text style={styles.campo}>Equipamento: {item.equipamento}</Text>
+      <Text style={styles.campo}>Valor: {formatarBRL(item.valor)}</Text>
       <View style={styles.botoes}>
         {onUpdate && (
           <TouchableOpacity style={styles.btnEditar} onPress={onUpdate}>
@@ -32,22 +32,13 @@ const styles = StyleSheet.create({
     padding: 12,
     elevation: 1,
   },
-  tipo: {
+  titulo: {
     fontWeight: 'bold',
-    fontSize: 15,
+    fontSize: 18,
     marginBottom: 4,
-    fontSize: 18,
   },
-  cliente: {
+  campo: {
     marginBottom: 2,
-    fontSize: 18,
-  },
-  valor: {
-    marginBottom: 2,
-    fontSize: 18,
-  },
-  descricao: {
-    marginBottom: 8,
     fontSize: 18,
   },
   botoes: {
