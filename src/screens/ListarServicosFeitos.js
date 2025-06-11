@@ -9,7 +9,7 @@ import DateTimeInput from '../components/DateTimeInput';
 import { useFocusEffect } from '@react-navigation/native';
 import { listarServicosFeitos, atualizarServicoFeito, excluirServicoFeito } from '../services/ServicosFeitosDB';
 import { formatarCPF, formatarCelular, formatarValor, formatarDataHoraExibicao } from '../utils/format';
-import styles from '../styles/ListarServicosFeitosStyles';
+import styles from '../styles/CommonStyles';
 
 export default function ListarServicosFeitos() {
   const [servicosFeitos, setServicosFeitos] = useState([]);

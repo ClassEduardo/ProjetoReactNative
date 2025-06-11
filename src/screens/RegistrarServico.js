@@ -5,7 +5,7 @@ import FormSection from '../components/FormSection';
 import PickerInput from '../components/PickerInput';
 import { inserirServicoFeito } from '../services/ServicosFeitosDB';
 import { formatarCPF, formatarCelular, formatarValor } from '../utils/format';
-import CommonStyles from '../styles/CommonStyles';
+import styles from '../styles/CommonStyles';
 
 
 const vazio = {
@@ -82,7 +82,7 @@ export default function RegistrarServico() {
   }
 
   return (
-    <SafeAreaView style={CommonStyles.container}>
+    <SafeAreaView style={styles.container}>
       <KeyboardAvoidingView
         style={{ flex: 1 }}
         behavior="padding"
@@ -217,17 +217,3 @@ export default function RegistrarServico() {
   );
 }
 
-const styles = StyleSheet.create({
- saveButton: {
-    backgroundColor: '#007AFF',
-    padding: 12,
-    borderRadius: 6,
-    alignItems: 'center',
-    marginTop: 16,
-  },
-  saveButtonText: {
-    color: '#fff',
-    fontWeight: 'bold',
-    fontSize: 16,
-  },
-});
