@@ -1,14 +1,7 @@
 import React, { useState } from 'react';
 import {
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-  Platform,
-} from 'react-native';
-import DateTimePicker, {
-  DateTimePickerAndroid,
-} from '@react-native-community/datetimepicker';
+  View, Text, TouchableOpacity, StyleSheet, Platform } from 'react-native';
+import DateTimePicker, { DateTimePickerAndroid, } from '@react-native-community/datetimepicker';
 import { formatarDataHoraExibicao, paraIsoLocal } from '../utils/format';
 
 export default function DateTimeInput({ label, value, onChange }) {

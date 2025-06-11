@@ -1,76 +1,81 @@
 import React, { useState, useCallback } from 'react';
-import { Text, StyleSheet } from 'react-native';
-import ScreenContainer from '../components/ScreenContainer';
+import { Text, SafeAreaView, ScrollView, ActivityIndicator } from 'react-native';
 import Card from '../components/Card';
 import { useFocusEffect } from '@react-navigation/native';
 import { formatarBRL } from '../utils/format';
 import { obterEstatisticasServicos } from '../services/ServicosFeitosDB';
+import styles from '../styles/CommonStyles';
 
 export default function RelatorioServicos() {
-  const [stats, setStats] = useState(null);
+  const [estatisticas, setEstatisticas] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  const labelsFormaPagamento = {
+    pix: 'Pix',
+    debito: 'Débito',
+    credito: 'Crédito',
+    dinheiro: 'Dinheiro',
+  };
 
   useFocusEffect(
     useCallback(() => {
-      obterEstatisticasServicos().then(setStats).catch(() => setStats(null));
+      obterEstatisticasServicos()
+        .then(res => {
+          setEstatisticas(res);
+          setLoading(false);
+        })
+        .catch(() => {
+          setEstatisticas(null);
+          setLoading(false);
+        });
     }, [])
   );
 
-  if (!stats || stats.totalServicos === 0) {
+  if (loading) {
     return (
-      <ScreenContainer style={styles.container}>
-        <Text style={styles.msg}>Não há serviços cadastrados.</Text>
-      </ScreenContainer>
+      <SafeAreaView style={styles.container}>
+        <ActivityIndicator size="large" style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }} />
+      </SafeAreaView>
+    );
+  }
+
+  if (!estatisticas || estatisticas.total_servicos === 0) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <Text style={styles.relatorio_msg}>Não há serviços cadastrados.</Text>
+      </SafeAreaView>
     );
   }
 
   return (
-    <ScreenContainer style={styles.container}>
-      <Card>
-        <Text style={styles.title}>Top 3 serviços com valor mais alto</Text>
-        {stats.top3Caro.map((item, index) => (
-          <Text key={index} style={styles.item}>{`${item.solucao} - ${formatarBRL(item.valor)}`}</Text>
-        ))}
-      </Card>
+    <SafeAreaView style={styles.container}>
+      <ScrollView>
+        <Card>
+          <Text style={styles.relatorio_title}>Top 3 soluções com valor mais alto no mês</Text>
+          {estatisticas.top3Caro.map((item, index) => (
+            <Text key={index} style={styles.relatorio_item}>{`${item.solucao} - ${formatarBRL(item.valor)}`}</Text>
+          ))}
+        </Card>
 
-      <Card>
-        <Text style={styles.title}>Top 3 serviços com valor mais baixo</Text>
-        {stats.top3Baratos.map((item, index) => (
-          <Text key={index} style={styles.item}>{`${item.solucao} - ${formatarBRL(item.valor)}`}</Text>
-        ))}
-      </Card>
+        <Card>
+          <Text style={styles.relatorio_title}>Top 3 soluções com valor mais baixo no mês</Text>
+          {estatisticas.top3Baratos.map((item, index) => (
+            <Text key={index} style={styles.relatorio_item}>{`${item.solucao} - ${formatarBRL(item.valor)}`}</Text>
+          ))}
+        </Card>
 
-      <Card>
-        <Text style={styles.item}>Total de serviços realizados: {stats.totalServicos}</Text>
-        <Text style={styles.item}>Montante faturado: {formatarBRL(stats.montanteTotal)}</Text>
-        <Text style={styles.item}>Média de serviços por mês: {stats.mediaServicosMes.toFixed(2)}</Text>
-        <Text style={styles.item}>Média de faturamento por mês: {formatarBRL(stats.mediaValorMes)}</Text>
-      </Card>
-    </ScreenContainer>
+        <Card>
+          <Text style={styles.relatorio_item}>Total de serviços realizados no mês: {estatisticas.totalServicos}</Text>
+          <Text style={styles.relatorio_item}>Montante faturado no mês: {formatarBRL(estatisticas.montanteTotal)}</Text>
+        </Card>
+
+        <Card>
+          <Text style={styles.relatorio_title}>Faturamento por forma de pagamento no mês</Text>
+          {Object.entries(estatisticas.totaisFormasPagamento).map(([forma, total]) => (
+            <Text key={forma} style={styles.relatorio_item}>{`${labelsFormaPagamento[forma] || forma}: ${formatarBRL(total)}`}</Text>
+          ))}
+        </Card>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 24,
-    backgroundColor: '#fff',
-  },
-  card: {
-    marginBottom: 16,
-    padding: 12,
-    backgroundColor: '#f4f4f4',
-    borderRadius: 6,
-  },
-  title: {
-    fontWeight: 'bold',
-    marginBottom: 8,
-  },
-  item: {
-    marginBottom: 4,
-    fontSize: 16,
-  },
-  msg: {
-    marginTop: 32,
-    textAlign: 'center',
-  },
-});

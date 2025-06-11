@@ -1,22 +1,42 @@
 import React from 'react';
-import { View, Button, StyleSheet } from 'react-native';
+import { View, Pressable, Text, StyleSheet } from 'react-native';
 
-export default function SaveCancelButtons({ onSave, onCancel, orientation = 'column', style }) {
-  const orientationStyle = orientation === 'row' ? styles.row : null;
+export default function SaveCancelButtons({ onSave, onCancel }) {
   return (
-    <View style={[styles.container, orientationStyle, style]}>
-      <Button title="Salvar alterações" onPress={onSave} />
-      <Button title="Cancelar" color="gray" onPress={onCancel} />
+    <View style={styles.container}>
+      <Pressable style={[styles.button, styles.save]} onPress={onSave}>
+        <Text style={styles.text}>Salvar</Text>
+      </Pressable>
+
+      <Pressable style={[styles.button, styles.cancel]} onPress={onCancel}>
+        <Text style={styles.text}>Cancelar</Text>
+      </Pressable>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    gap: 12,
+    flexDirection: 'column',           
+    justifyContent: 'flex-end',     
+    marginTop: 16,
+    gap: 10,
   },
-  row: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
+  button: {
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 6,
+    alignItems: 'center',               
+  },
+  save: {
+    backgroundColor: '#007AFF',     
+  },
+  cancel: {
+    backgroundColor: '#CCC',        
+  },
+  text: {
+    color: '#FFF',
+    fontWeight: 'bold',
+    fontSize: 16,
   },
 });
