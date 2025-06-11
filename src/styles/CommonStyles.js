@@ -27,7 +27,7 @@ const styles = StyleSheet.create({
     textAlignVertical: 'top',
   },
   modalButtons: {
-    flexDirection: 'row',
+    flexDirection: 'column',
     justifyContent: 'flex-end',
     gap: 12,
     marginTop: 16,

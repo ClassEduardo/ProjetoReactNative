@@ -52,7 +52,7 @@ export default function ListarServicosFeitos() {
         });
 
       setServicosFeitos(secoes);
-      setLoading(true);
+      setLoading(false);
     });
   }
 
@@ -100,7 +100,7 @@ export default function ListarServicosFeitos() {
             secoes.push({ title: formatarDataHoraExibicao(data), data: agrupado[data] });
           });
         setServicosFeitos(secoes);
-        setLoading(true);
+        setLoading(false);
       });
     }
 

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Pressable, StyleSheet, Alert, ToastAndroid, ScrollView, Text, KeyboardAvoidingView, SafeAreaView, ActivityIndicator } from 'react-native'; import MaskedInput from '../components/MaskedInput';
+import { Pressable, Alert, ToastAndroid, ScrollView, Text, KeyboardAvoidingView, SafeAreaView, ActivityIndicator } from 'react-native'; import MaskedInput from '../components/MaskedInput';
 import DateTimeInput from '../components/DateTimeInput';
 import FormSection from '../components/FormSection';
 import PickerInput from '../components/PickerInput';
@@ -71,7 +71,7 @@ export default function RegistrarServico() {
     if (!validar()) return;
     setLoading(true);
     inserirServicoFeito(form, ok => {
-      setLoading(true);
+      setLoading(false);
       if (ok) {
         ToastAndroid.show('Serviço registrado com sucesso!', ToastAndroid.SHORT);
         setForm(vazio);
