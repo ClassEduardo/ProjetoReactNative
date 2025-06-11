@@ -33,14 +33,14 @@ export default function RelatorioServicos() {
   return (
     <ScreenContainer style={styles.container}>
       <Card>
-        <Text style={styles.title}>Top 3 serviços com valor mais alto no mês</Text>
+        <Text style={styles.title}>Top 3 soluções com valor mais alto no mês</Text>
         {stats.top3Caro.map((item, index) => (
           <Text key={index} style={styles.item}>{`${item.solucao} - ${formatarBRL(item.valor)}`}</Text>
         ))}
       </Card>
 
       <Card>
-        <Text style={styles.title}>Top 3 serviços com valor mais baixo no mês</Text>
+        <Text style={styles.title}>Top 3 soluções com valor mais baixo no mês</Text>
         {stats.top3Baratos.map((item, index) => (
           <Text key={index} style={styles.item}>{`${item.solucao} - ${formatarBRL(item.valor)}`}</Text>
         ))}

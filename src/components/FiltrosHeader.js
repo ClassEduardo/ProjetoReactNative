@@ -8,7 +8,7 @@ export default function FiltrosHeader({ busca, setBusca, cpf, setCpf, entrada, s
     <View style={styles.container}>
       <Text style={styles.titulo}>Filtros</Text>
       <MaskedInput 
-        label="Busca" 
+        label="Buscar" 
         value={busca} 
         onChangeText={txt => setBusca(txt)} />
       <MaskedInput 
@@ -16,11 +16,11 @@ export default function FiltrosHeader({ busca, setBusca, cpf, setCpf, entrada, s
         value={cpf} 
         onChangeText={txt => setCpf(formatarCPF(txt))} />
       <MaskedInput 
-        label="Entrada" 
+        label="Data entrada" 
         value={entrada} 
         onChangeText={txt => setEntrada(formatarDataHora(txt))} />
       <MaskedInput 
-        label="Saída" 
+        label="Data saída" 
         value={saida} 
         onChangeText={txt => setSaida(formatarDataHora(txt))} />
     </View>
