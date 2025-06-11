@@ -61,6 +61,18 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 16,
   },
+    relatorio_title: {
+    fontWeight: 'bold',
+    marginBottom: 8,
+  },
+  relatorio_item: {
+    marginBottom: 4,
+    fontSize: 16,
+  },
+  relatorio_msg: {
+    marginTop: 32,
+    textAlign: 'center',
+  },
 });
 
 export default styles;
