@@ -37,15 +37,18 @@ export default function ListarServicosFeitos() {
 
       const secoes = [];
       const agrupado = {};
+
       lista.forEach(item => {
         if (!agrupado[item.data_hora_entrada]) agrupado[item.data_hora_entrada] = [];
         agrupado[item.data_hora_entrada].push(item);
       });
+
       Object.keys(agrupado)
         .sort((a, b) => parse(b) - parse(a))
         .forEach(data => {
           secoes.push({ title: formatarDataHoraExibicao(data), data: agrupado[data] });
         });
+
       setServicosFeitos(secoes);
     });
   }
@@ -57,12 +60,16 @@ export default function ListarServicosFeitos() {
 
         const filtrado = lista.filter(item => {
           const termo = buscaGeral.toLowerCase();
+
           const matchBusca = !buscaGeral || Object.keys(item).some(chave => {
             if (chave === 'valor') return false;
             return String(item[chave] || '').toLowerCase().includes(termo);
           });
+
           const entradaStr = formatarDataHoraExibicao(item.data_hora_entrada);
+
           const saidaStr = formatarDataHoraExibicao(item.data_hora_saida);
+
           return (
             (!cpfBusca || item.cpf.includes(cpfBusca)) &&
             (!entradaBusca || entradaStr.includes(entradaBusca)) &&
@@ -77,10 +84,12 @@ export default function ListarServicosFeitos() {
 
         const secoes = [];
         const agrupado = {};
+
         filtrado.forEach(item => {
           if (!agrupado[item.data_hora_entrada]) agrupado[item.data_hora_entrada] = [];
           agrupado[item.data_hora_entrada].push(item);
         });
+
         Object.keys(agrupado)
           .sort((a, b) => parse(b) - parse(a))
           .forEach(data => {
@@ -108,6 +117,7 @@ export default function ListarServicosFeitos() {
       Valor: editFields.valor,
       'Forma de pagamento': editFields.forma_pagamento,
     };
+
     const faltando = Object.entries(obrigatorios)
       .filter(([, v]) => !v)
       .map(([label]) => `\u2022 ${label}`);
@@ -115,6 +125,7 @@ export default function ListarServicosFeitos() {
       Alert.alert('Campos obrigatórios', `Preencha:\n${faltando.join('\n')}`);
       return;
     }
+
     atualizarServicoFeito(editFields, ok => {
       if (ok) {
         setModalVisible(false);

@@ -44,9 +44,11 @@ export default function RegistrarServico() {
       Valor: form.valor,
       'Forma de pagamento': form.forma_pagamento,
     };
+
     const faltando = Object.entries(obrigatorios)
       .filter(([, v]) => !v)
       .map(([label]) => `\u2022 ${label}`);
+
     if (faltando.length) {
       Alert.alert('Campos obrigatórios', `Preencha:\n${faltando.join('\n')}`);
       return false;
@@ -65,6 +67,7 @@ export default function RegistrarServico() {
 
   function salvar() {
     if (!validar()) return;
+    
     inserirServicoFeito(form, ok => {
       if (ok) {
         ToastAndroid.show('Serviço registrado com sucesso!', ToastAndroid.SHORT);
