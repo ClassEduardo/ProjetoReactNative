@@ -3,6 +3,7 @@ import { Text, StyleSheet, SectionList, Alert } from 'react-native';
 import ScreenContainer from '../components/ScreenContainer';
 import MaskedInput from '../components/MaskedInput';
 import CenteredModal from '../components/CenteredModal';
+import PickerInput from '../components/PickerInput';
 import ServicoFeitoItem from '../components/ServicoFeitoItem';
 import SaveCancelButtons from '../components/SaveCancelButtons';
 import FiltrosHeader from '../components/FiltrosHeader';
@@ -178,8 +179,27 @@ export default function ListarServicosFeitos() {
         <MaskedInput label="Condições" value={editFields.condicoes} onChangeText={txt => setEditFields(f => ({ ...f, condicoes: txt }))} />
         <MaskedInput label="Defeito" value={editFields.defeito} onChangeText={txt => setEditFields(f => ({ ...f, defeito: txt }))} />
         <MaskedInput label="Solução" value={editFields.solucao} onChangeText={txt => setEditFields(f => ({ ...f, solucao: txt }))} />
-        <MaskedInput label="Valor" value={editFields.valor} onChangeText={txt => setEditFields(f => ({ ...f, valor: formatarValor(txt) }))} keyboardType="numeric" />
-        <MaskedInput label="Forma" value={editFields.forma_pagamento} onChangeText={txt => setEditFields(f => ({ ...f, forma_pagamento: txt }))} />
+        <MaskedInput
+          label="Valor"
+          value={editFields.valor}
+          onChangeText={txt =>
+            setEditFields(f => ({ ...f, valor: formatarValor(txt) }))
+          }
+          keyboardType="numeric"
+        />
+        <PickerInput
+          label="Forma"
+          selectedValue={editFields.forma_pagamento}
+          onValueChange={txt =>
+            setEditFields(f => ({ ...f, forma_pagamento: txt }))
+          }
+          items={[
+            { label: 'Pix', value: 'pix' },
+            { label: 'Débito', value: 'debito' },
+            { label: 'Crédito', value: 'credito' },
+            { label: 'Dinheiro', value: 'dinheiro' },
+          ]}
+        />
         <SaveCancelButtons onSave={salvarEdicao} onCancel={() => setModalVisible(false)} />
       </CenteredModal>
     </ScreenContainer>

@@ -4,6 +4,7 @@ import ScreenContainer from '../components/ScreenContainer';
 import MaskedInput from '../components/MaskedInput';
 import DateTimeInput from '../components/DateTimeInput';
 import FormSection from '../components/FormSection';
+import PickerInput from '../components/PickerInput';
 import { inserirServicoFeito } from '../services/ServicosFeitosDB';
 import { formatarCPF, formatarCelular, formatarValor } from '../utils/format';
 
@@ -91,8 +92,24 @@ export default function RegistrarServico() {
             <MaskedInput label="Solução" value={form.solucao} onChangeText={setCampo('solucao')} />
           </FormSection>
           <FormSection title="Pagamento">
-            <MaskedInput label="Valor" value={form.valor} onChangeText={setCampo('valor')} format={formatarValor} keyboardType="numeric" />
-            <MaskedInput label="Forma de pagamento" value={form.forma_pagamento} onChangeText={setCampo('forma_pagamento')} />
+            <MaskedInput
+              label="Valor"
+              value={form.valor}
+              onChangeText={setCampo('valor')}
+              format={formatarValor}
+              keyboardType="numeric"
+            />
+            <PickerInput
+              label="Forma de pagamento"
+              selectedValue={form.forma_pagamento}
+              onValueChange={setCampo('forma_pagamento')}
+              items={[
+                { label: 'Pix', value: 'pix' },
+                { label: 'Débito', value: 'debito' },
+                { label: 'Crédito', value: 'credito' },
+                { label: 'Dinheiro', value: 'dinheiro' },
+              ]}
+            />
           </FormSection>
           <Button title="Salvar serviço" onPress={salvar} />
         </ScrollView>
