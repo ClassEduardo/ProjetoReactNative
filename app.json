@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Criar OS",
-    "slug": "Criar OS",
+    "name": "ProjetoReactNative",
+    "slug": "ProjetoReactNative",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./Assets/icon.png",
