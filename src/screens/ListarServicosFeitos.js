@@ -1,6 +1,5 @@
 import React, { useCallback, useState, useEffect } from 'react';
-import { Text, StyleSheet, SectionList, Alert } from 'react-native';
-import ScreenContainer from '../components/ScreenContainer';
+import { Text, StyleSheet, SectionList, Alert, SafeAreaView } from 'react-native';
 import MaskedInput from '../components/MaskedInput';
 import CenteredModal from '../components/CenteredModal';
 import PickerInput from '../components/PickerInput';
@@ -160,7 +159,7 @@ export default function ListarServicosFeitos() {
   }
 
   return (
-    <ScreenContainer style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <SectionList
         sections={servicosFeitos}
         keyExtractor={item => item.id.toString()}
@@ -292,7 +291,7 @@ export default function ListarServicosFeitos() {
         />
         <SaveCancelButtons onSave={salvarEdicao} onCancel={() => setModalVisible(false)} />
       </CenteredModal>
-    </ScreenContainer>
+    </SafeAreaView>
   );
 }
 

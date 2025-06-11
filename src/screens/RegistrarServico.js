@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { Button, StyleSheet, Alert, ToastAndroid, ScrollView, Text, KeyboardAvoidingView, Platform } from 'react-native';
-import ScreenContainer from '../components/ScreenContainer';
+import { Pressable, StyleSheet, Alert, ToastAndroid, ScrollView, Text, KeyboardAvoidingView, SafeAreaView } from 'react-native';
 import MaskedInput from '../components/MaskedInput';
 import DateTimeInput from '../components/DateTimeInput';
 import FormSection from '../components/FormSection';
@@ -67,7 +66,7 @@ export default function RegistrarServico() {
 
   function salvar() {
     if (!validar()) return;
-    
+
     inserirServicoFeito(form, ok => {
       if (ok) {
         ToastAndroid.show('Serviço registrado com sucesso!', ToastAndroid.SHORT);
@@ -79,7 +78,7 @@ export default function RegistrarServico() {
   }
 
   return (
-    <ScreenContainer style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <KeyboardAvoidingView
         style={{ flex: 1 }}
         behavior="padding"
@@ -201,10 +200,12 @@ export default function RegistrarServico() {
               ]}
             />
           </FormSection>
-          <Button title="Salvar serviço" onPress={salvar} />
+          <Pressable style={styles.saveButton} onPress={salvar}>
+            <Text style={styles.saveButtonText}>Salvar serviço</Text>
+          </Pressable>
         </ScrollView>
       </KeyboardAvoidingView>
-    </ScreenContainer>
+    </SafeAreaView>
   );
 }
 
@@ -227,4 +228,16 @@ const styles = StyleSheet.create({
     minWidth: '100%',
     textAlignVertical: "top",
   },
+  saveButton: {
+  backgroundColor: '#007AFF',
+  padding: 12,
+  borderRadius: 6,
+  alignItems: 'center',
+  marginTop: 16,
+},
+saveButtonText: {
+  color: '#fff',
+  fontWeight: 'bold',
+  fontSize: 16,
+},
 });

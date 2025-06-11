@@ -1,6 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { Text, StyleSheet } from 'react-native';
-import ScreenContainer from '../components/ScreenContainer';
+import { Text, StyleSheet, SafeAreaView } from 'react-native';
 import Card from '../components/Card';
 import { useFocusEffect } from '@react-navigation/native';
 import { formatarBRL } from '../utils/format';
@@ -24,14 +23,14 @@ export default function RelatorioServicos() {
 
   if (!stats || stats.totalServicos === 0) {
     return (
-      <ScreenContainer style={styles.container}>
+      <SafeAreaView style={styles.container}>
         <Text style={styles.msg}>Não há serviços cadastrados.</Text>
-      </ScreenContainer>
+      </SafeAreaView>
     );
   }
 
   return (
-    <ScreenContainer style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <Card>
         <Text style={styles.title}>Top 3 soluções com valor mais alto no mês</Text>
         {stats.top3Caro.map((item, index) => (
@@ -57,7 +56,7 @@ export default function RelatorioServicos() {
           <Text key={forma} style={styles.item}>{`${labelsFormaPagamento[forma] || forma}: ${formatarBRL(total)}`}</Text>
         ))}
       </Card>
-    </ScreenContainer>
+    </SafeAreaView>
   );
 }
 
