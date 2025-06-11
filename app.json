@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "ProjetoReactNative",
-    "slug": "ProjetoReactNative",
+    "name": "Criar OS",
+    "slug": "Criar OS",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./Assets/icon.png",
@@ -33,6 +33,11 @@
       "eas": {
         "projectId": "4c6409fc-e1d9-4469-8bae-2934d157a1e9"
       }
+    },
+    "expo": {
+      "name": "Criar OS",
+      "slug": "Criar OS",
+      "icon": "./assets/icon.png"
     }
   }
 }
