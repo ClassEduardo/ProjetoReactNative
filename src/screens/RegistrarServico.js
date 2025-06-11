@@ -66,18 +66,17 @@ export default function RegistrarServico() {
     return true;
   }
 
-  function salvar() {
+  async function salvar() {
     if (!validar()) return;
     setLoading(true);
-    inserirServicoFeito(form, ok => {
-      setLoading(false);
-      if (ok) {
-        ToastAndroid.show('Serviço registrado com sucesso!', ToastAndroid.SHORT);
-        setForm(vazio);
-      } else {
-        Alert.alert('Erro ao registrar o serviço!');
-      }
-    });
+    const ok = await inserirServicoFeito(form);
+    setLoading(false);
+    if (ok) {
+      ToastAndroid.show('Serviço registrado com sucesso!', ToastAndroid.SHORT);
+      setForm(vazio);
+    } else {
+      Alert.alert('Erro ao registrar o serviço!');
+    }
   }
 
   return (
@@ -196,6 +195,7 @@ export default function RegistrarServico() {
               selectedValue={form.forma_pagamento}
               onValueChange={setCampo('forma_pagamento')}
               items={[
+                { label: '', value: '' },
                 { label: 'Pix', value: 'pix' },
                 { label: 'Débito', value: 'debito' },
                 { label: 'Crédito', value: 'credito' },
@@ -209,7 +209,7 @@ export default function RegistrarServico() {
             ) : (
               <Text style={styles.saveButtonText}>Salvar serviço</Text>
             )}
-            </Pressable>
+          </Pressable>
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>

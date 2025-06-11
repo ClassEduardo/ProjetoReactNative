@@ -32,7 +32,7 @@ export async function createTableServicosFeitos() {
   }
 }
 
-export async function inserirServicoFeito(dados, callback) {
+export async function inserirServicoFeito(dados) {
   try {
     await db.runAsync(
       `INSERT INTO servicos_feitos (
@@ -60,14 +60,14 @@ export async function inserirServicoFeito(dados, callback) {
       dados.valor,
       dados.forma_pagamento
     );
-    callback(true);
+    return true;
   } catch (error) {
     console.log('Erro ao inserir serviço feito:', error);
-    callback(false);
+    return false;
   }
 }
 
-export async function atualizarServicoFeito(dados, callback) {
+export async function atualizarServicoFeito(dados) {
   const {
     id,
     numero_os,
@@ -117,14 +117,14 @@ export async function atualizarServicoFeito(dados, callback) {
       forma_pagamento,
       id
     );
-    callback(true);
+    return true;
   } catch (error) {
     console.log('Erro ao atualizar serviço feito:', error);
-    callback(false);
+    return false;
   }
 }
 
-export async function listarServicosFeitos(callback) {
+export async function listarServicosFeitos() {
   try {
     const resultados = await db.getAllAsync(
       `SELECT id, numero_os, nome_cliente, cpf, celular, situacao,
@@ -133,23 +133,23 @@ export async function listarServicosFeitos(callback) {
               solucao, valor, forma_pagamento
          FROM servicos_feitos;`
     );
-    callback(resultados);
+    return resultados;
   } catch (error) {
     console.log('Erro ao obter serviços.', error);
-    callback([]);
+    return [];
   }
 }
 
-export async function excluirServicoFeito(id, callback) {
+export async function excluirServicoFeito(id) {
   try {
     await db.runAsync(
       `DELETE FROM servicos_feitos WHERE id = ?;`,
       id
     );
-    callback(true);
+    return true;
   } catch (error) {
     console.log('Erro ao excluir serviço feito:', error);
-    callback(false);
+    return false;
   }
 }
 
