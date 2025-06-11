@@ -192,13 +192,27 @@ export async function obterEstatisticasServicos({ mes, ano } = {}) {
       anoRef
     );
 
+    const pagamentosRes = await db.getAllAsync(
+      `SELECT forma_pagamento as forma, SUM(CAST(valor AS REAL)) as total
+         FROM servicos_feitos
+        WHERE strftime('%m', data_hora_entrada) = ?
+          AND strftime('%Y', data_hora_entrada) = ?
+        GROUP BY forma_pagamento;`,
+      mesRef,
+      anoRef
+    );
+
+    const totaisFormasPagamento = pagamentosRes.reduce((acc, { forma, total }) => {
+      acc[forma] = total || 0;
+      return acc;
+    }, {});
+
     return {
       top3Caro,
       top3Baratos,
       totalServicos: total,
       montanteTotal: valorTotal || 0,
-      mediaServicosMes: total,
-      mediaValorMes: valorTotal || 0,
+      totaisFormasPagamento,
     };
   } catch (error) {
     console.log('Erro ao obter estatisticas:', error);

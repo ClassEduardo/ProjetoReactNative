@@ -9,6 +9,13 @@ import { obterEstatisticasServicos } from '../services/ServicosFeitosDB';
 export default function RelatorioServicos() {
   const [stats, setStats] = useState(null);
 
+  const labelsFormaPagamento = {
+    pix: 'Pix',
+    debito: 'Débito',
+    credito: 'Crédito',
+    dinheiro: 'Dinheiro',
+  };
+
   useFocusEffect(
     useCallback(() => {
       obterEstatisticasServicos().then(setStats).catch(() => setStats(null));
@@ -42,8 +49,13 @@ export default function RelatorioServicos() {
       <Card>
         <Text style={styles.item}>Total de serviços realizados no mês: {stats.totalServicos}</Text>
         <Text style={styles.item}>Montante faturado no mês: {formatarBRL(stats.montanteTotal)}</Text>
-        <Text style={styles.item}>Média de serviços por mês: {stats.mediaServicosMes.toFixed(2)}</Text>
-        <Text style={styles.item}>Média de faturamento por mês: {formatarBRL(stats.mediaValorMes)}</Text>
+      </Card>
+
+      <Card>
+        <Text style={styles.title}>Faturamento por forma de pagamento no mês</Text>
+        {Object.entries(stats.totaisFormasPagamento).map(([forma, total]) => (
+          <Text key={forma} style={styles.item}>{`${labelsFormaPagamento[forma] || forma}: ${formatarBRL(total)}`}</Text>
+        ))}
       </Card>
     </ScreenContainer>
   );

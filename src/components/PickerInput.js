@@ -44,7 +44,6 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   picker: {
-    height: 55,
     paddingHorizontal: 12,
   },
 });
