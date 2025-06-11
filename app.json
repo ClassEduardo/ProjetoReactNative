@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Gerar OS",
-    "slug": "Gerar OS",
+    "name": "ProjetoReactNative",
+    "slug": "ProjetoReactNative",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./Assets/icon.png",
@@ -21,7 +21,7 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.Gerar OS.RegistrarServico"
+      "package": "com.projetoReactNative.RegistrarServico"
     },
     "web": {
       "favicon": "./Assets/favicon.png"
@@ -31,7 +31,7 @@
     ],
     "extra": {
       "eas": {
-        "projectId": ""
+        "projectId": "4c6409fc-e1d9-4469-8bae-2934d157a1e9"
       }
     },
     "expo": {
