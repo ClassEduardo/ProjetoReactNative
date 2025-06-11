@@ -26,22 +26,22 @@ export default function RelatorioServicos() {
   return (
     <ScreenContainer style={styles.container}>
       <Card>
-        <Text style={styles.title}>Top 3 serviços com valor mais alto</Text>
+        <Text style={styles.title}>Top 3 serviços com valor mais alto no mês</Text>
         {stats.top3Caro.map((item, index) => (
           <Text key={index} style={styles.item}>{`${item.solucao} - ${formatarBRL(item.valor)}`}</Text>
         ))}
       </Card>
 
       <Card>
-        <Text style={styles.title}>Top 3 serviços com valor mais baixo</Text>
+        <Text style={styles.title}>Top 3 serviços com valor mais baixo no mês</Text>
         {stats.top3Baratos.map((item, index) => (
           <Text key={index} style={styles.item}>{`${item.solucao} - ${formatarBRL(item.valor)}`}</Text>
         ))}
       </Card>
 
       <Card>
-        <Text style={styles.item}>Total de serviços realizados: {stats.totalServicos}</Text>
-        <Text style={styles.item}>Montante faturado: {formatarBRL(stats.montanteTotal)}</Text>
+        <Text style={styles.item}>Total de serviços realizados no mês: {stats.totalServicos}</Text>
+        <Text style={styles.item}>Montante faturado no mês: {formatarBRL(stats.montanteTotal)}</Text>
         <Text style={styles.item}>Média de serviços por mês: {stats.mediaServicosMes.toFixed(2)}</Text>
         <Text style={styles.item}>Média de faturamento por mês: {formatarBRL(stats.mediaValorMes)}</Text>
       </Card>

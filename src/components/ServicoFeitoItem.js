@@ -11,12 +11,12 @@ export default function ServicoFeitoItem({ item, onUpdate, onDelete }) {
       <View style={styles.botoes}>
         {onUpdate && (
           <TouchableOpacity style={styles.btnEditar} onPress={onUpdate}>
-            <Text style={{ color: '#007bff', fontSize: 18 }}>Editar</Text>
+            <Text style={{ color: '#007bff', fontSize: 18 }}>Editarr</Text>
           </TouchableOpacity>
         )}
         {onDelete && (
           <TouchableOpacity style={styles.btnExcluir} onPress={onDelete}>
-            <Text style={{ color: '#d00', fontSize: 18 }}>Excluir</Text>
+            <Text style={{ color: '#d00', fontSize: 18 }}>Excluirr</Text>
           </TouchableOpacity>
         )}
       </View>
