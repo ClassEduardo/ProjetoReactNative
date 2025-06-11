@@ -33,7 +33,6 @@ export default function RegistrarServico() {
   const [form, setForm] = useState(vazio);
   const [loading, setLoading] = useState(false);
 
-
   const setCampo = campo => valor => setForm(f => ({ ...f, [campo]: valor }));
 
   function validar() {
