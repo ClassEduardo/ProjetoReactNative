@@ -75,7 +75,7 @@ export default function ListarServicosFeitos() {
           const saidaStr = formatarDataHoraExibicao(item.data_hora_saida);
 
           return (
-            (!cpfBusca || item.cpf.includes(cpfBusca)) &&
+            (!cpfBusca || (item.cpf || '').includes(cpfBusca)) &&
             (!entradaBusca || entradaStr.includes(entradaBusca)) &&
             (!saidaBusca || saidaStr.includes(saidaBusca)) &&
             matchBusca
