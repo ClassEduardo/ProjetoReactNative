@@ -298,6 +298,7 @@ export default function ListarServicosFeitos() {
             setEditFields(f => ({ ...f, forma_pagamento: txt }))
           }
           items={[
+            { label: '', value: '' },
             { label: 'Pix', value: 'pix' },
             { label: 'Débito', value: 'debito' },
             { label: 'Crédito', value: 'credito' },
