@@ -1,15 +1,15 @@
 import React, { useCallback, useState, useEffect } from 'react';
-import { Text, StyleSheet, SectionList, Alert, SafeAreaView } from 'react-native';
+import { Text, SectionList, Alert, SafeAreaView, View, StatusBar, ActivityIndicator, Pressable } from 'react-native';
 import MaskedInput from '../components/MaskedInput';
 import CenteredModal from '../components/CenteredModal';
 import PickerInput from '../components/PickerInput';
 import ServicoFeitoItem from '../components/ServicoFeitoItem';
-import SaveCancelButtons from '../components/SaveCancelButtons';
 import FiltrosHeader from '../components/FiltrosHeader';
 import DateTimeInput from '../components/DateTimeInput';
 import { useFocusEffect } from '@react-navigation/native';
 import { listarServicosFeitos, atualizarServicoFeito, excluirServicoFeito } from '../services/ServicosFeitosDB';
 import { formatarCPF, formatarCelular, formatarValor, formatarDataHoraExibicao } from '../utils/format';
+import styles from '../styles/ListarServicosFeitosStyles';
 
 export default function ListarServicosFeitos() {
   const [servicosFeitos, setServicosFeitos] = useState([]);
@@ -19,6 +19,8 @@ export default function ListarServicosFeitos() {
   const [entradaBusca, setEntradaBusca] = useState('');
   const [saidaBusca, setSaidaBusca] = useState('');
   const [buscaGeral, setBuscaGeral] = useState('');
+  const [loading, setLoading] = useState(false);
+
 
   useFocusEffect(
     useCallback(() => {
@@ -27,6 +29,7 @@ export default function ListarServicosFeitos() {
   );
 
   async function carregarServicos() {
+    setLoading(true);
     await listarServicosFeitos((lista = []) => {
       if (!Array.isArray(lista)) lista = [];
 
@@ -49,11 +52,13 @@ export default function ListarServicosFeitos() {
         });
 
       setServicosFeitos(secoes);
+      setLoading(true);
     });
   }
 
   useEffect(() => {
     async function filtrar() {
+      setLoading(true);
       await listarServicosFeitos((lista = []) => {
         if (!Array.isArray(lista)) lista = [];
 
@@ -95,6 +100,7 @@ export default function ListarServicosFeitos() {
             secoes.push({ title: formatarDataHoraExibicao(data), data: agrupado[data] });
           });
         setServicosFeitos(secoes);
+        setLoading(true);
       });
     }
 
@@ -159,34 +165,42 @@ export default function ListarServicosFeitos() {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
-      <SectionList
-        sections={servicosFeitos}
-        keyExtractor={item => item.id.toString()}
-        ListHeaderComponent={
-          <FiltrosHeader
-            busca={buscaGeral}
-            setBusca={setBuscaGeral}
-            cpf={cpfBusca}
-            setCpf={setCpfBusca}
-            entrada={entradaBusca}
-            setEntrada={setEntradaBusca}
-            saida={saidaBusca}
-            setSaida={setSaidaBusca}
+    <SafeAreaView style={[styles.container, { paddingTop: StatusBar.currentHeight || 0 }]}>
+      {loading ? (
+        <ActivityIndicator style={{ marginTop: 20 }} size="large" />
+      ) : (
+        <View style={{ flex: 1 }}>
+          <SectionList
+            sections={servicosFeitos}
+            keyExtractor={item => item.id.toString()}
+            initialNumToRender={10}
+            stickySectionHeadersEnabled
+            ListHeaderComponent={
+              <FiltrosHeader
+                busca={buscaGeral}
+                setBusca={setBuscaGeral}
+                cpf={cpfBusca}
+                setCpf={setCpfBusca}
+                entrada={entradaBusca}
+                setEntrada={setEntradaBusca}
+                saida={saidaBusca}
+                setSaida={setSaidaBusca}
+              />
+            }
+            renderSectionHeader={({ section: { title } }) => (
+              <Text style={styles.secao}>{title}</Text>
+            )}
+            renderItem={({ item }) => (
+              <ServicoFeitoItem
+                item={item}
+                onUpdate={() => abrirModalEditar(item)}
+                onDelete={() => confirmarExcluir(item.id)}
+              />
+            )}
+            ListEmptyComponent={<Text style={{ textAlign: 'center', marginTop: 32 }}>Nenhum serviço registrado.</Text>}
           />
-        }
-        renderSectionHeader={({ section: { title } }) => (
-          <Text style={styles.secao}>{title}</Text>
-        )}
-        renderItem={({ item }) => (
-          <ServicoFeitoItem
-            item={item}
-            onUpdate={() => abrirModalEditar(item)}
-            onDelete={() => confirmarExcluir(item.id)}
-          />
-        )}
-        ListEmptyComponent={<Text style={{ textAlign: 'center', marginTop: 32 }}>Nenhum serviço registrado.</Text>}
-      />
+        </View>
+      )}
       <CenteredModal visible={modalVisible} onRequestClose={() => setModalVisible(false)}>
         <MaskedInput
           label="Número OS"
@@ -289,36 +303,14 @@ export default function ListarServicosFeitos() {
             { label: 'Dinheiro', value: 'dinheiro' },
           ]}
         />
-        <SaveCancelButtons onSave={salvarEdicao} onCancel={() => setModalVisible(false)} />
-      </CenteredModal>
+        <View style={styles.modalButtons}>
+          <Pressable style={[styles.modalButton, styles.modalSave]} onPress={salvarEdicao}>
+            <Text style={styles.modalButtonText}>Salvar</Text>
+          </Pressable>
+          <Pressable style={[styles.modalButton, styles.modalCancel]} onPress={() => setModalVisible(false)}>
+            <Text style={styles.modalButtonText}>Cancelar</Text>
+          </Pressable>
+        </View>      </CenteredModal>
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 24,
-    backgroundColor: '#fff',
-  },
-  titulo: {
-    fontWeight: 'bold',
-    fontSize: 18,
-    marginBottom: 12,
-    textAlign: 'center',
-  },
-  secao: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    backgroundColor: '#eaeaea',
-    padding: 6,
-    marginTop: 18,
-    marginBottom: 8,
-    borderRadius: 5,
-    textAlign: 'center',
-  },
-  textarea: {
-    height: 60,
-    textAlignVertical: 'top',
-  },
-});

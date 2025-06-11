@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { Pressable, StyleSheet, Alert, ToastAndroid, ScrollView, Text, KeyboardAvoidingView, SafeAreaView } from 'react-native';
-import MaskedInput from '../components/MaskedInput';
+import { Pressable, StyleSheet, Alert, ToastAndroid, ScrollView, Text, KeyboardAvoidingView, SafeAreaView, ActivityIndicator } from 'react-native'; import MaskedInput from '../components/MaskedInput';
 import DateTimeInput from '../components/DateTimeInput';
 import FormSection from '../components/FormSection';
 import PickerInput from '../components/PickerInput';
 import { inserirServicoFeito } from '../services/ServicosFeitosDB';
 import { formatarCPF, formatarCelular, formatarValor } from '../utils/format';
+import CommonStyles from '../styles/CommonStyles';
+
 
 const vazio = {
   numero_os: '',
@@ -30,6 +31,8 @@ const vazio = {
 
 export default function RegistrarServico() {
   const [form, setForm] = useState(vazio);
+  const [loading, setLoading] = useState(false);
+
 
   const setCampo = campo => valor => setForm(f => ({ ...f, [campo]: valor }));
 
@@ -66,8 +69,9 @@ export default function RegistrarServico() {
 
   function salvar() {
     if (!validar()) return;
-
+    setLoading(true);
     inserirServicoFeito(form, ok => {
+      setLoading(true);
       if (ok) {
         ToastAndroid.show('Serviço registrado com sucesso!', ToastAndroid.SHORT);
         setForm(vazio);
@@ -78,7 +82,7 @@ export default function RegistrarServico() {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={CommonStyles.container}>
       <KeyboardAvoidingView
         style={{ flex: 1 }}
         behavior="padding"
@@ -200,9 +204,13 @@ export default function RegistrarServico() {
               ]}
             />
           </FormSection>
-          <Pressable style={styles.saveButton} onPress={salvar}>
-            <Text style={styles.saveButtonText}>Salvar serviço</Text>
-          </Pressable>
+          <Pressable style={styles.saveButton} onPress={salvar} disabled={loading}>
+            {loading ? (
+              <ActivityIndicator color="#fff" />
+            ) : (
+              <Text style={styles.saveButtonText}>Salvar serviço</Text>
+            )}
+            </Pressable>
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -210,34 +218,16 @@ export default function RegistrarServico() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 24,
-    backgroundColor: "#fff",
-  },
-  input: {
-    borderColor: "#bbb",
-    borderWidth: 1,
-    borderRadius: 6,
+ saveButton: {
+    backgroundColor: '#007AFF',
     padding: 12,
+    borderRadius: 6,
+    alignItems: 'center',
+    marginTop: 16,
+  },
+  saveButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
     fontSize: 16,
-    backgroundColor: "#f9f9f9",
-    marginBottom: 8,
   },
-  textarea: {
-    minWidth: '100%',
-    textAlignVertical: "top",
-  },
-  saveButton: {
-  backgroundColor: '#007AFF',
-  padding: 12,
-  borderRadius: 6,
-  alignItems: 'center',
-  marginTop: 16,
-},
-saveButtonText: {
-  color: '#fff',
-  fontWeight: 'bold',
-  fontSize: 16,
-},
 });
