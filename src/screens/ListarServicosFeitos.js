@@ -13,6 +13,7 @@ import styles from '../styles/CommonStyles';
 
 export default function ListarServicosFeitos() {
   const [servicosFeitos, setServicosFeitos] = useState([]);
+  const [listaOriginal, setListaOriginal] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [editFields, setEditFields] = useState({});
   const [cpfBusca, setCpfBusca] = useState('');
@@ -33,6 +34,7 @@ export default function ListarServicosFeitos() {
     const lista = await listarServicosFeitos();
     if (!Array.isArray(lista)) {
       setServicosFeitos([]);
+      setListaOriginal([]);
       setLoading(false);
       return;
     }
@@ -40,6 +42,7 @@ export default function ListarServicosFeitos() {
     const parse = d => new Date(d || '').getTime();
 
     lista.sort((a, b) => parse(b.data_hora_entrada) - parse(a.data_hora_entrada));
+    setListaOriginal(lista);
 
     const secoes = [];
     const agrupado = {};
@@ -61,13 +64,7 @@ export default function ListarServicosFeitos() {
 
   useEffect(() => {
     async function filtrar() {
-      setLoading(true);
-      const lista = await listarServicosFeitos();
-      if (!Array.isArray(lista)) {
-        setServicosFeitos([]);
-        setLoading(false);
-        return;
-      }
+      const lista = Array.isArray(listaOriginal) ? listaOriginal : [];
 
       const filtrado = lista.filter(item => {
         const termo = buscaGeral.toLowerCase();
@@ -106,12 +103,12 @@ export default function ListarServicosFeitos() {
         .forEach(data => {
           secoes.push({ title: formatarDataHoraExibicao(data), data: agrupado[data] });
         });
+
       setServicosFeitos(secoes);
-      setLoading(false);
     };
 
     filtrar();
-  }, [cpfBusca, entradaBusca, saidaBusca, buscaGeral]);
+  }, [cpfBusca, entradaBusca, saidaBusca, buscaGeral, listaOriginal]);
 
   function abrirModalEditar(servico) {
     setEditFields({ ...servico });
