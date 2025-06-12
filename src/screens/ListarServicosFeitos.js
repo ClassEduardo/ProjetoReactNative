@@ -111,7 +111,10 @@ export default function ListarServicosFeitos() {
   }, [cpfBusca, entradaBusca, saidaBusca, buscaGeral, listaOriginal]);
 
   function abrirModalEditar(servico) {
-    setEditFields({ ...servico });
+    setEditFields({
+      ...servico,
+      valor: formatarValor(String(servico.valor ?? '')),
+    });
     setModalVisible(true);
   }
 

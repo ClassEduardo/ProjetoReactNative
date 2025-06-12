@@ -2,6 +2,14 @@ import { openDatabaseSync } from 'expo-sqlite';
 
 const db = openDatabaseSync('assistencia.db');
 
+function normalizarValor(valor) {
+  if (typeof valor === 'string') {
+    const num = Number(valor.replace(/\./g, '').replace(',', '.'));
+    if (!isNaN(num)) return num;
+  }
+  return valor;
+}
+
 export async function createTableServicosFeitos() {
   try {
     await db.execAsync(
@@ -27,6 +35,14 @@ export async function createTableServicosFeitos() {
         forma_pagamento TEXT
       );`
     );
+    const cols = await db.getAllAsync(`PRAGMA table_info(servicos_feitos);`);
+    const valorCol = cols.find(c => c.name === 'valor');
+    if (valorCol && String(valorCol.type).toUpperCase() === 'TEXT') {
+      await db.runAsync(
+        `UPDATE servicos_feitos
+            SET valor = REPLACE(REPLACE(valor, '.', ''), ',', '.');`
+      );
+    }
   } catch (error) {
     console.log('Erro ao criar tabela servicos_feitos:', error);
   }
@@ -133,7 +149,7 @@ export async function listarServicosFeitos() {
               solucao, valor, forma_pagamento
          FROM servicos_feitos;`
     );
-    return resultados;
+    return resultados.map(r => ({ ...r, valor: normalizarValor(r.valor) }));
   } catch (error) {
     console.log('Erro ao obter serviços.', error);
     return [];
@@ -168,9 +184,9 @@ export async function obterEstatisticasServicos({ mes, ano } = {}) {
       anoRef
     );
     const total = totalRes[0]?.total || 0;
-    const valorTotal = totalRes[0]?.valor_total || 0;
+    const valorTotal = normalizarValor(totalRes[0]?.valor_total) || 0;
 
-    const top3Caro = await db.getAllAsync(
+    const top3Caro = (await db.getAllAsync(
       `SELECT solucao, valor
          FROM servicos_feitos
         WHERE strftime('%m', data_hora_entrada) = ?
@@ -179,9 +195,9 @@ export async function obterEstatisticasServicos({ mes, ano } = {}) {
          LIMIT 3;`,
       mesRef,
       anoRef
-    );
+    )).map(r => ({ ...r, valor: normalizarValor(r.valor) }));;
 
-    const top3Baratos = await db.getAllAsync(
+    const top3Baratos = (await db.getAllAsync(
       `SELECT solucao, valor
          FROM servicos_feitos
         WHERE strftime('%m', data_hora_entrada) = ?
@@ -190,9 +206,9 @@ export async function obterEstatisticasServicos({ mes, ano } = {}) {
          LIMIT 3;`,
       mesRef,
       anoRef
-    );
+    )).map(r => ({ ...r, valor: normalizarValor(r.valor) }));
 
-    const pagamentosRes = await db.getAllAsync(
+    const pagamentosRes = (await db.getAllAsync(
       `SELECT forma_pagamento as forma, SUM(CAST(REPLACE(REPLACE(valor, '.', ''), ',', '.') AS REAL)) as total
          FROM servicos_feitos
         WHERE strftime('%m', data_hora_entrada) = ?
@@ -200,7 +216,7 @@ export async function obterEstatisticasServicos({ mes, ano } = {}) {
         GROUP BY forma_pagamento;`,
       mesRef,
       anoRef
-    );
+    )).map(r => ({ forma: r.forma, total: normalizarValor(r.total) }));
 
     const totaisFormasPagamento = pagamentosRes.reduce((acc, { forma, total }) => {
       acc[forma] = total || 0;
