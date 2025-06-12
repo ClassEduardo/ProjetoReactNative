@@ -176,7 +176,7 @@ export async function obterEstatisticasServicos({ mes, ano } = {}) {
     const anoRef = ano || String(agora.getFullYear());
 
     const totalRes = await db.getAllAsync(
-      `SELECT COUNT(*) as total, SUM(CAST(REPLACE(REPLACE(valor, '.', ''), ',', '.') AS REAL)) as valor_total
+      `SELECT COUNT(*) as total, SUM(CAST(valor AS REAL)) as valor_total
          FROM servicos_feitos
         WHERE strftime('%m', data_hora_entrada) = ?
           AND strftime('%Y', data_hora_entrada) = ?;`,
@@ -191,7 +191,7 @@ export async function obterEstatisticasServicos({ mes, ano } = {}) {
          FROM servicos_feitos
         WHERE strftime('%m', data_hora_entrada) = ?
           AND strftime('%Y', data_hora_entrada) = ?
-         ORDER BY CAST(REPLACE(REPLACE(valor, '.', ''), ',', '.') AS REAL) DESC
+         ORDER BY CAST(valor AS REAL) DESC
          LIMIT 3;`,
       mesRef,
       anoRef
@@ -202,14 +202,14 @@ export async function obterEstatisticasServicos({ mes, ano } = {}) {
          FROM servicos_feitos
         WHERE strftime('%m', data_hora_entrada) = ?
           AND strftime('%Y', data_hora_entrada) = ?
-         ORDER BY CAST(REPLACE(REPLACE(valor, '.', ''), ',', '.') AS REAL) ASC
+         ORDER BY CAST(valor AS REAL) ASC
          LIMIT 3;`,
       mesRef,
       anoRef
     )).map(r => ({ ...r, valor: normalizarValor(r.valor) }));
 
     const pagamentosRes = (await db.getAllAsync(
-      `SELECT forma_pagamento as forma, SUM(CAST(REPLACE(REPLACE(valor, '.', ''), ',', '.') AS REAL)) as total
+      `SELECT forma_pagamento as forma, SUM(CAST(valor AS REAL)) as total
          FROM servicos_feitos
         WHERE strftime('%m', data_hora_entrada) = ?
           AND strftime('%Y', data_hora_entrada) = ?
