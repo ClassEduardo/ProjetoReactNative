@@ -111,9 +111,15 @@ export default function ListarServicosFeitos() {
   }, [cpfBusca, entradaBusca, saidaBusca, buscaGeral, listaOriginal]);
 
   function abrirModalEditar(servico) {
+    let valorFormatado = '';
+    if (typeof servico.valor === 'number') {
+      valorFormatado = servico.valor.toFixed(2).replace('.', ',');
+    } else {
+      valorFormatado = formatarValor(String(servico.valor ?? ''));
+    }
     setEditFields({
       ...servico,
-      valor: formatarValor(String(servico.valor ?? '')),
+      valor: valorFormatado,
     });
     setModalVisible(true);
   }
