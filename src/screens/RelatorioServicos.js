@@ -39,14 +39,6 @@ export default function RelatorioServicos() {
     );
   }
 
-  if (!estatisticas || estatisticas.total_servicos === 0) {
-    return (
-      <SafeAreaView style={styles.container}>
-        <Text style={styles.relatorio_msg}>Não há serviços cadastrados.</Text>
-      </SafeAreaView>
-    );
-  }
-
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView>

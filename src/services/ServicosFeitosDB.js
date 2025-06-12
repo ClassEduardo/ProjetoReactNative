@@ -23,7 +23,7 @@ export async function createTableServicosFeitos() {
         condicoes TEXT,
         defeito TEXT,
         solucao TEXT,
-        valor TEXT,
+        valor REAL,
         forma_pagamento TEXT
       );`
     );
