@@ -1,8 +1,8 @@
 {
   "build": {
     "preview": {
-      "ios": {
-        "buildType": "archive"
+      "android": {
+        "buildType": "apk"
       }
     },
     "preview2": {
@@ -17,8 +17,8 @@
       "distribution": "internal"
     },
     "production": {
-      "ios": {
-        "buildType": "archive"
+      "android": {
+        "buildType": "apk"
       }
     }
   }
